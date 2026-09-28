@@ -1,0 +1,111 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+export const runtime = 'edge';
+
+const SUPABASE_URL = 'https://frbvsdumltlzisddrlbi.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyYnZzZHVtbHRsemlzZGRybGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNTk4NDQsImV4cCI6MjA5NzgzNTg0NH0.8Vrrs8tIyjdGrD3xGoQ3lkpv4G3LBvy4bpeXpaQ8OGY';
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { domain: string } }
+) {
+  const rawDomain = params.domain.replace(/\.svg$/, '');
+  const domain = rawDomain.replace(/^www\./, '').toLowerCase();
+
+  // Look up badge_verified status
+  let verified = false;
+  let lastChecked = '';
+  try {
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/bfsg_checks?domain=eq.${encodeURIComponent(domain)}&select=badge_verified,last_checked_at&limit=1`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      }
+    );
+    const rows = await resp.json();
+    if (rows && rows.length > 0) {
+      verified = rows[0].badge_verified === true;
+      if (rows[0].last_checked_at) {
+        const d = new Date(rows[0].last_checked_at);
+        lastChecked = d.toLocaleDateString('de-DE', { month: 'short', year: 'numeric' });
+      }
+    }
+  } catch {
+    // serve unverified badge
+  }
+
+  const color = verified ? '#16a34a' : '#6b7280';
+  const accentColor = verified ? '#22c55e' : '#9ca3af';
+  const statusText = verified ? 'GEPRÜFT' : 'NICHT GEPRÜFT';
+  const dateText = lastChecked ? lastChecked : '';
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+<title id="title">BFSG ${verified ? 'geprüft' : 'nicht geprüft'}: ${domain}</title>
+<desc id="desc">Rundes Prüfsiegel für Barrierefreiheit nach BFSG.</desc>
+<circle cx="120" cy="120" r="117" fill="#ffffff" stroke="#1a1a2e" stroke-width="4"/>
+<circle cx="120" cy="120" r="109" fill="none" stroke="#1a1a2e" stroke-width="1"/>
+<circle cx="120" cy="120" r="80" fill="#f0f4f8" stroke="#1a1a2e" stroke-width="2"/>
+<g fill="#1a1a2e" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-anchor="middle">
+<text transform="translate(32.722 85.091) rotate(-68.2)" font-size="11.5" font-weight="bold">B</text>
+<text transform="translate(37.003 75.870) rotate(-62)" font-size="11.5" font-weight="bold">A</text>
+<text transform="translate(42.254 67.164) rotate(-55.8)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(48.415 59.077) rotate(-49.6)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(55.414 51.702) rotate(-43.4)" font-size="11.5" font-weight="bold">I</text>
+<text transform="translate(63.168 45.126) rotate(-37.2)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(71.586 39.426) rotate(-31)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(80.572 34.669) rotate(-24.8)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(90.018 30.910) rotate(-18.6)" font-size="11.5" font-weight="bold">F</text>
+<text transform="translate(99.815 28.193) rotate(-12.4)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(109.848 26.550) rotate(-6.2)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(120.000 26.000) rotate(0)" font-size="11.5" font-weight="bold">I</text>
+<text transform="translate(130.152 26.550) rotate(6.2)" font-size="11.5" font-weight="bold">H</text>
+<text transform="translate(140.185 28.193) rotate(12.4)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(149.982 30.910) rotate(18.6)" font-size="11.5" font-weight="bold">I</text>
+<text transform="translate(159.428 34.669) rotate(24.8)" font-size="11.5" font-weight="bold">T</text>
+<text transform="translate(168.414 39.426) rotate(31)" font-size="11.5" font-weight="bold"> </text>
+<text transform="translate(176.832 45.126) rotate(37.2)" font-size="11.5" font-weight="bold">G</text>
+<text transform="translate(184.586 51.702) rotate(43.4)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(191.585 59.077) rotate(49.6)" font-size="11.5" font-weight="bold">P</text>
+<text transform="translate(197.746 67.164) rotate(55.8)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(202.997 75.870) rotate(62)" font-size="11.5" font-weight="bold">Ü</text>
+<text transform="translate(207.278 85.091) rotate(68.2)" font-size="11.5" font-weight="bold">F</text>
+<text transform="translate(44.942 187.582) rotate(48)" font-size="10" font-weight="bold">B</text>
+<text transform="translate(50.861 193.626) rotate(43.2)" font-size="10" font-weight="bold">F</text>
+<text transform="translate(57.264 199.153) rotate(38.4)" font-size="10" font-weight="bold">S</text>
+<text transform="translate(64.107 204.125) rotate(33.6)" font-size="10" font-weight="bold">G</text>
+<text transform="translate(71.343 208.507) rotate(28.8)" font-size="10" font-weight="bold">-</text>
+<text transform="translate(78.920 212.268) rotate(24)" font-size="10" font-weight="bold">C</text>
+<text transform="translate(86.784 215.382) rotate(19.2)" font-size="10" font-weight="bold">H</text>
+<text transform="translate(94.882 217.827) rotate(14.4)" font-size="10" font-weight="bold">E</text>
+<text transform="translate(103.156 219.586) rotate(9.6)" font-size="10" font-weight="bold">C</text>
+<text transform="translate(111.549 220.646) rotate(4.8)" font-size="10" font-weight="bold">K</text>
+<text transform="translate(120.000 221.000) rotate(0)" font-size="10" font-weight="bold">E</text>
+<text transform="translate(128.451 220.646) rotate(-4.8)" font-size="10" font-weight="bold">N</text>
+<text transform="translate(136.844 219.586) rotate(-9.6)" font-size="10" font-weight="bold">.</text>
+<text transform="translate(145.118 217.827) rotate(-14.4)" font-size="10" font-weight="bold">D</text>
+<text transform="translate(153.216 215.382) rotate(-19.2)" font-size="10" font-weight="bold">E</text>
+</g>
+<circle cx="23" cy="126" r="3" fill="${accentColor}"/>
+<circle cx="217" cy="126" r="3" fill="${accentColor}"/>
+<!-- Rollstuhlfahrer-Icon -->
+<circle cx="120" cy="62" r="8" fill="${color}"/>
+<path d="M120 72 L120 95 L108 110" stroke="${color}" stroke-width="5" stroke-linecap="round" fill="none"/>
+<path d="M120 82 L136 88" stroke="${color}" stroke-width="5" stroke-linecap="round" fill="none"/>
+<path d="M108 95 L132 95" stroke="${color}" stroke-width="4" stroke-linecap="round" fill="none"/>
+<circle cx="108" cy="115" r="8" stroke="${color}" stroke-width="3.5" fill="none"/>
+<circle cx="132" cy="115" r="8" stroke="${color}" stroke-width="3.5" fill="none"/>
+<text x="120" y="144" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="13" font-weight="bold" letter-spacing="0.5" fill="#1a1a2e">BFSG</text>
+<rect x="42" y="152" width="156" height="27" rx="4" fill="${color}"/>
+<text x="120" y="170" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="10" font-weight="bold" letter-spacing="0.5" fill="#ffffff">${statusText}${dateText ? ' · ' + dateText : ''}</text>
+</svg>`;
+
+  return new NextResponse(svg, {
+    headers: {
+      'Content-Type': 'image/svg+xml',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+}
