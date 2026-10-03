@@ -469,6 +469,9 @@ textarea:focus-visible {
 .footer a { color: var(--muted); }
 .footer a:hover { color: var(--fg); }
 .footer .footerLegal { margin-top: 12px; }
+/* Hide the legal-notice row until the Impressum widget has rendered content */
+.footer .footerLegal:has(#impressum-free-widget:empty),
+.footer .footerLegal:has(#impressum-free-widget[style*="none"]) { display: none; }
 .footer img { max-width: 100%; height: auto; }
 
 /* Contact form */
