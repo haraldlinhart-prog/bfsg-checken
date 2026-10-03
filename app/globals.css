@@ -188,6 +188,7 @@ textarea:focus-visible {
 }
 
 .checkCard {
+  text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -242,6 +243,7 @@ textarea:focus-visible {
 
 /* Summary bar */
 .summaryBar {
+  text-align: left;
   display: flex;
   align-items: center;
   justify-content: space-between;
