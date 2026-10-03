@@ -131,7 +131,7 @@ function buildChecks(f: Facts, lang: Lang): CheckResult[] {
   } else {
     altStatus = imgsWithoutAlt > 2 ? 'red' : 'yellow';
     altMessage = en
-      ? `${imgsWithoutAlt} of ${imgCount} ${imgCount === 1 ? 'image is' : 'images are'} missing the alt attribute. Alt texts are essential for screen reader users. (WCAG 1.1.1)`
+      ? `${imgsWithoutAlt} of ${imgCount} ${imgCount === 1 ? 'image' : 'images'} ${imgsWithoutAlt === 1 ? 'is' : 'are'} missing the alt attribute. Alt texts are essential for screen reader users. (WCAG 1.1.1)`
       : `${imgsWithoutAlt} von ${imgCount} Bild(ern) fehlt das alt-Attribut. Alt-Texte sind für Screenreader-Nutzer essenziell. (WCAG 1.1.1)`;
   }
   checks.push({
