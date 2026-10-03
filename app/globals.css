@@ -4,15 +4,17 @@
   --bg: #0f1117;
   --surface: #1a1d27;
   --border: #2a2d3a;
+  --input-border: #6b7280;  /* form field outlines (3.8:1, WCAG 1.4.11) */
   --fg: #e2e8f0;
   --muted: #94a3b8;
-  --accent: #8b5cf6;
-  --accent-hover: #7c3aed;
+  --accent: #7c3aed;        /* button backgrounds (white text: 5.7:1) */
+  --accent-text: #a78bfa;   /* links, accents on dark background (6.9:1) */
+  --accent-hover: #6d28d9;
   --green: #22c55e;
   --green-bg: #14532d22;
   --yellow: #eab308;
   --yellow-bg: #71350022;
-  --red: #ef4444;
+  --red: #f87171;
   --red-bg: #7f1d1d22;
   --radius: 10px;
 }
@@ -26,7 +28,7 @@ body {
   min-height: 100vh;
 }
 
-a { color: var(--accent); text-decoration: none; }
+a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; }
 a:hover { text-decoration: underline; }
 
 .wrap {
@@ -53,7 +55,7 @@ a:hover { text-decoration: underline; }
   color: var(--fg);
   text-decoration: none;
 }
-.header-logo .logoAccent { color: var(--accent); }
+.header-logo .logoAccent { color: var(--accent-text); }
 
 /* Language switch (DE | EN) */
 .langSwitch {
@@ -65,6 +67,7 @@ a:hover { text-decoration: underline; }
 }
 .langSwitch a {
   color: var(--muted);
+  text-decoration: none;
   padding: 6px 8px;
   border-radius: 6px;
   min-width: 44px;
@@ -96,7 +99,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-text);
   outline-offset: 2px;
 }
 
@@ -128,15 +131,14 @@ textarea:focus-visible {
 .checkInput {
   flex: 1;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--input-border);
   border-radius: var(--radius);
   color: var(--fg);
   font-size: 1rem;
   padding: 12px 16px;
-  outline: none;
   transition: border-color .2s;
 }
-.checkInput:focus { border-color: var(--accent); }
+.checkInput:focus { border-color: var(--accent-text); }
 .checkInput::placeholder { color: var(--muted); }
 .checkBtn {
   background: var(--accent);
@@ -227,8 +229,8 @@ textarea:focus-visible {
   font-weight: 600;
   padding: 4px 12px;
   border-radius: 6px;
-  border: 1px solid var(--accent);
-  color: var(--accent);
+  border: 1px solid var(--accent-text);
+  color: var(--accent-text);
   text-decoration: none;
   transition: background .15s, color .15s;
 }
@@ -297,7 +299,7 @@ textarea:focus-visible {
   align-items: center;
   gap: 10px;
 }
-.toolCard:hover { border-color: var(--accent); text-decoration: none; }
+.toolCard:hover { border-color: var(--accent-text); text-decoration: none; }
 .toolEmoji { font-size: 1.3rem; flex-shrink: 0; }
 .toolName { font-size: .875rem; font-weight: 600; line-height: 1.3; }
 .toolDesc { font-size: .75rem; color: var(--muted); }
@@ -442,7 +444,7 @@ textarea:focus-visible {
   vertical-align: middle;
 }
 
-/* Info section (English page) */
+/* Info section ("Was ist das BFSG?" / "What is the BFSG?") */
 .info {
   padding: 40px 0;
   border-top: 1px solid var(--border);
@@ -468,10 +470,6 @@ textarea:focus-visible {
 }
 .footer a { color: var(--muted); }
 .footer a:hover { color: var(--fg); }
-.footer .footerLegal { margin-top: 12px; }
-/* Hide the legal-notice row until the Impressum widget has rendered content */
-.footer .footerLegal:has(#impressum-free-widget:empty),
-.footer .footerLegal:has(#impressum-free-widget[style*="none"]) { display: none; }
 .footer img { max-width: 100%; height: auto; }
 
 /* Contact form */
@@ -500,19 +498,18 @@ textarea:focus-visible {
 .contactField select,
 .contactField textarea {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--input-border);
   border-radius: var(--radius);
   color: var(--fg);
   font-size: 1rem;
   font-family: inherit;
   padding: 10px 14px;
-  outline: none;
   transition: border-color .2s;
   resize: vertical;
 }
 .contactField input:focus,
 .contactField select:focus,
-.contactField textarea:focus { border-color: var(--accent); }
+.contactField textarea:focus { border-color: var(--accent-text); }
 .contactField input::placeholder,
 .contactField textarea::placeholder { color: var(--muted); }
 .contactField select { cursor: pointer; }
@@ -604,6 +601,55 @@ textarea:focus-visible {
 .contactField input:focus-visible,
 .contactField select:focus-visible,
 .contactField textarea:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-text);
   outline-offset: 2px;
 }
+
+/* Result heading ("Ergebnis für: …") */
+h2.resultsUrl { font-weight: 400; }
+
+/* Skip link — visible as soon as it receives keyboard focus */
+.skipLink {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 1000;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  text-decoration: none;
+}
+.skipLink:focus { top: 12px; }
+
+/* Footer seals: own BFSG badge + Impressum widget */
+.footer .footerLinks { line-height: 2; }
+.footerSeals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 16px;
+}
+.footerSeals .footerBadge { display: block; }
+.footerSeals .footerLegal { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.footerSeals .footerLegal:has(#impressum-free-widget:empty),
+.footerSeals .footerLegal:has(#impressum-free-widget[style*="none"]) { display: none; }
+.footerSeals .if-siegel { width: 120px !important; height: 120px !important; }
+
+/* Legal / text pages (Datenschutz) */
+.legal { max-width: 720px; padding: 48px 16px; }
+.legal h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.2; margin-bottom: 24px; }
+.legal h2 { font-size: 1.15rem; line-height: 1.3; margin: 32px 0 10px; }
+.legal p, .legal ul { color: var(--fg); margin-bottom: 12px; }
+.legal ul { padding-left: 22px; }
+.legal li { margin-bottom: 4px; }
+
+/* 404 page */
+.notFound { text-align: center; padding: 72px 0 56px; }
+.notFound .notFoundCode { font-size: 3rem; font-weight: 800; color: var(--accent-text); line-height: 1; margin-bottom: 12px; }
+.notFound h1 { font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.2; margin-bottom: 12px; }
+.notFound p { color: var(--muted); max-width: 480px; margin: 0 auto 28px; }
+

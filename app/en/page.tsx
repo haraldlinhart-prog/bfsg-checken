@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import CheckForm from '../components/CheckForm';
 import SiteHeader from '../components/SiteHeader';
-import FooterEn from '../components/FooterEn';
+import SiteFooter from '../components/SiteFooter';
 import { alternatesFor } from '../components/i18n';
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export default function HomeEn() {
     <>
       <SiteHeader lang="en" deHref="/" enHref="/en" />
 
-      <main>
+      <main id="main">
         <section className="hero">
           <div className="wrap">
             <h1>Is your website accessible?</h1>
@@ -46,18 +46,18 @@ export default function HomeEn() {
       </main>
 
       <div className="wrap">
-        <section className="cta">
-          <h2>Looking for professional help?</h2>
+        <section className="cta" aria-labelledby="cta-heading">
+          <h2 id="cta-heading">Looking for professional help?</h2>
           <p>
             We&rsquo;re real webmasters — servers, domains, databases, forms, automation.
             Describe your problem and name your price.
           </p>
-          <a className="ctaBtn" href="https://webmaster.plus" target="_blank" rel="noopener noreferrer">
+          <a className="ctaBtn" href="https://webmaster.plus/en" target="_blank" rel="noopener noreferrer">
             Go to webmaster.plus →
           </a>
         </section>
 
-        <FooterEn />
+        <SiteFooter lang="en" />
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ContactForm from '../../components/ContactForm';
 import SiteHeader from '../../components/SiteHeader';
-import FooterEn from '../../components/FooterEn';
+import SiteFooter from '../../components/SiteFooter';
 import { alternatesFor } from '../../components/i18n';
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default function ContactPage() {
     <>
       <SiteHeader lang="en" deHref="/kontakt" enHref="/en/contact" />
 
-      <main>
+      <main id="main">
         <section className="hero" style={{ paddingBottom: '0' }}>
           <div className="wrap">
             <h1>Contact</h1>
@@ -41,7 +41,7 @@ export default function ContactPage() {
       </main>
 
       <div className="wrap">
-        <FooterEn showCheckLink />
+        <SiteFooter lang="en" showCheckLink />
       </div>
     </>
   );

@@ -1,12 +1,22 @@
 import ContactForm from '../../components/ContactForm';
 import SiteHeader from '../../components/SiteHeader';
+import SiteFooter from '../../components/SiteFooter';
 import { alternatesFor } from '../../components/i18n';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Kontakt | bfsg-checken.de',
-  description: 'Fragen zu BFSG-Compliance? Schreiben Sie uns — wir helfen Ihnen weiter.',
+  description: 'Fragen zur Barrierefreiheit, zum BFSG oder zum BFSG-Siegel? Schreiben Sie uns — wir helfen Ihnen gerne weiter.',
   alternates: alternatesFor('/kontakt', '/en/contact', 'de'),
+  openGraph: {
+    title: 'Kontakt | bfsg-checken.de',
+    description: 'Fragen zur Barrierefreiheit, zum BFSG oder zum BFSG-Siegel? Schreiben Sie uns — wir helfen Ihnen gerne weiter.',
+    url: '/kontakt',
+    siteName: 'bfsg-checken.de',
+    locale: 'de_DE',
+    alternateLocale: ['en_US'],
+    type: 'website',
+  },
 };
 
 export default function KontaktPage() {
@@ -14,7 +24,7 @@ export default function KontaktPage() {
     <>
       <SiteHeader lang="de" deHref="/kontakt" enHref="/en/contact" />
 
-      <main>
+      <main id="main">
         <section className="hero" style={{ paddingBottom: '0' }}>
           <div className="wrap">
             <h1>Kontakt</h1>
@@ -31,18 +41,7 @@ export default function KontaktPage() {
       </main>
 
       <div className="wrap">
-        <footer className="footer">
-          <p>
-            Ein Tool von{' '}
-            <a href="https://webmaster.plus" target="_blank" rel="noopener noreferrer">webmaster.plus</a>
-            {' '}· Teil des{' '}
-            <a href="https://www.pan21.info" target="_blank" rel="noopener noreferrer">PAN21-Netzwerks</a>
-            {' '}·{' '}
-            <a href="https://webmaster.plus" target="_blank" rel="noopener noreferrer">Impressum & Datenschutz</a>
-            {' '}·{' '}
-            <a href="/">BFSG-Check starten</a>
-          </p>
-        </footer>
+        <SiteFooter lang="de" showCheckLink />
       </div>
     </>
   );

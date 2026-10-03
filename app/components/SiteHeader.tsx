@@ -11,6 +11,10 @@ interface Props {
 /** Site header with logo and DE | EN language switch (used on every page). */
 export default function SiteHeader({ lang, deHref, enHref }: Props) {
   return (
+    <>
+    <a className="skipLink" href="#main">
+      {lang === 'en' ? 'Skip to main content' : 'Zum Hauptinhalt springen'}
+    </a>
     <header className="header">
       <div className="wrap">
         <a className="header-logo" href={lang === 'en' ? '/en' : '/'}>
@@ -37,5 +41,6 @@ export default function SiteHeader({ lang, deHref, enHref }: Props) {
         </nav>
       </div>
     </header>
+    </>
   );
 }

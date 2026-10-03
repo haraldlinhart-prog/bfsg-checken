@@ -1,10 +1,19 @@
-import ImpressumWidget from '../../components/ImpressumWidget';
 import SiteHeader from '../../components/SiteHeader';
+import SiteFooter from '../../components/SiteFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Datenschutzerklärung | bfsg-checken.de',
   description: 'Datenschutzerklärung von bfsg-checken.de — Informationen zur Verarbeitung personenbezogener Daten.',
+  alternates: { canonical: '/datenschutz' },
+  openGraph: {
+    title: 'Datenschutzerklärung | bfsg-checken.de',
+    description: 'Datenschutzerklärung von bfsg-checken.de — Informationen zur Verarbeitung personenbezogener Daten.',
+    url: '/datenschutz',
+    siteName: 'bfsg-checken.de',
+    locale: 'de_DE',
+    type: 'website',
+  },
 };
 
 export default function Datenschutz() {
@@ -12,8 +21,8 @@ export default function Datenschutz() {
     <>
       <SiteHeader lang="de" deHref="/datenschutz" enHref="/en" />
 
-      <main>
-        <div className="wrap" style={{ maxWidth: '720px', padding: '48px 24px' }}>
+      <main id="main">
+        <div className="wrap legal">
           <h1>Datenschutzerklärung</h1>
 
           <h2>1. Verantwortlicher</h2>
@@ -22,7 +31,7 @@ export default function Datenschutz() {
             7533 South Center View CT, STE R<br />
             84084 West Jordan, Utah, USA<br />
             E-Mail: <a href="mailto:impressum@pan21.com">impressum@pan21.com</a><br />
-            Telefon: 030-568 4450-0
+            Telefon: <a href="tel:+493056844500">030-568 4450-0</a>
           </p>
 
           <h2>2. Allgemeines zur Datenverarbeitung</h2>
@@ -30,18 +39,18 @@ export default function Datenschutz() {
             Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung
             einer funktionsfähigen Website sowie unserer Inhalte und Leistungen erforderlich ist.
             Eine Verarbeitung personenbezogener Daten erfolgt regelmäßig nur nach Einwilligung
-            des Nutzers, es sei denn, die Verarbeitung ist durch gesetzliche Vorschriften gestattet.
+            der Nutzer, es sei denn, die Verarbeitung ist durch gesetzliche Vorschriften gestattet.
           </p>
 
-          <h2>3. Server-Logfiles</h2>
+          <h2>3. Hosting und Server-Logfiles</h2>
           <p>
-            Der Hosting-Anbieter dieser Website (Vercel Inc., 340 Pine Street, Suite 701,
-            San Francisco, CA 94104, USA) erhebt und speichert automatisch Informationen in
+            Der Hosting-Anbieter dieser Website (Vercel Inc., 440 N Barranca Avenue #4133,
+            Covina, CA 91723, USA) erhebt und speichert automatisch Informationen in
             sogenannten Server-Logfiles, die Ihr Browser automatisch übermittelt. Dies sind:
           </p>
           <ul>
             <li>Browsertyp und Browserversion</li>
-            <li>Verwendetes Betriebssystem</li>
+            <li>verwendetes Betriebssystem</li>
             <li>Referrer-URL</li>
             <li>Hostname des zugreifenden Rechners</li>
             <li>Uhrzeit der Serveranfrage</li>
@@ -52,16 +61,20 @@ export default function Datenschutz() {
             Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse am sicheren
             und stabilen Betrieb der Website). Die Daten werden nach spätestens 30 Tagen gelöscht.
             Vercel verarbeitet Daten gemäß seiner{' '}
-            <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">
-              Datenschutzerklärung
+            <a href="https://vercel.com/legal/privacy-notice" target="_blank" rel="noopener noreferrer">
+              Datenschutzhinweise
             </a>.
           </p>
 
           <h2>4. Website-Check (Kerndienst)</h2>
           <p>
-            Wenn Sie eine URL in den BFSG-Checker eingeben, wird diese URL an unsere
-            Server-API übermittelt und dort analysiert. Die eingegebene URL wird dabei
-            nicht dauerhaft gespeichert und nicht mit Ihrer IP-Adresse verknüpft.
+            Wenn Sie eine URL in den BFSG-Check eingeben, wird diese URL an unsere
+            Server-API übermittelt; die Seite wird von unserem Server abgerufen und analysiert.
+            Gespeichert werden ausschließlich die geprüfte Domain, ob das BFSG-Siegel auf der
+            Website gefunden wurde, der Zeitpunkt der Prüfung und das Prüfergebnis. Diese
+            Angaben benötigen wir, um den Prüfstatus im Siegel anzuzeigen. Sie werden nicht mit
+            Ihrer IP-Adresse oder anderen Angaben zu Ihrer Person verknüpft. Die Speicherung
+            erfolgt bei Supabase Inc. (Rechenzentrum in Frankfurt am Main) als Auftragsverarbeiter.
             Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung / vorvertragliche
             Maßnahmen) sowie Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der
             Erbringung des kostenlosen Dienstes).
@@ -71,15 +84,17 @@ export default function Datenschutz() {
           <p>
             Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben
             aus dem Anfrageformular inklusive der von Ihnen dort angegebenen Kontaktdaten
-            zwecks Bearbeitung der Anfrage bei uns gespeichert. Diese Daten geben wir nicht
-            ohne Ihre Einwilligung weiter. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
+            zwecks Bearbeitung der Anfrage bei uns gespeichert. Die Nachricht wird über den
+            E-Mail-Versanddienst Resend (Resend, Inc., USA) als Auftragsverarbeiter an uns
+            zugestellt. Darüber hinaus geben wir diese Daten nicht ohne Ihre Einwilligung weiter.
+            Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
             Die Daten werden gelöscht, sobald sie für die Erreichung des Zwecks ihrer Erhebung
             nicht mehr erforderlich sind, spätestens jedoch nach 6 Monaten.
           </p>
 
           <h2>6. Keine Cookies, kein Tracking</h2>
           <p>
-            Diese Website setzt keine Tracking-Cookies und verwendet keine Analyse- oder
+            Diese Website setzt keine Cookies und verwendet keine Analyse- oder
             Werbedienste (kein Google Analytics, kein Facebook Pixel, keine ähnlichen Tools).
             Es werden ausschließlich technisch notwendige Funktionen genutzt.
           </p>
@@ -87,14 +102,14 @@ export default function Datenschutz() {
           <h2>7. Externe Dienste</h2>
           <p>
             <strong>Impressum-Free.de (Widget):</strong> Im Footer dieser Seite wird ein
-            Widget des Dienstes impressum-free.de eingebunden. Dabei wird eine Anfrage an
-            die Server von impressum-free.de (ebenfalls gehostet bei Vercel) gesendet,
-            um die Impressumsdaten abzurufen. Dabei wird Ihre IP-Adresse an Vercel-Server
-            übermittelt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
+            Widget des Dienstes impressum-free.de eingebunden. Dabei werden das Skript, die
+            Impressumsdaten und das Impressum-Siegel von den Servern von impressum-free.de
+            (ebenfalls gehostet bei Vercel) abgerufen. Dabei wird Ihre IP-Adresse an
+            Vercel-Server übermittelt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
           </p>
 
           <h2>8. Ihre Rechte</h2>
-          <p>Sie haben gegenüber uns folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:</p>
+          <p>Sie haben uns gegenüber folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:</p>
           <ul>
             <li>Recht auf Auskunft (Art. 15 DSGVO)</li>
             <li>Recht auf Berichtigung (Art. 16 DSGVO)</li>
@@ -110,31 +125,18 @@ export default function Datenschutz() {
 
           <h2>9. Aktualität dieser Datenschutzerklärung</h2>
           <p>
-            Diese Datenschutzerklärung ist aktuell gültig und hat den Stand September 2026.
+            Diese Datenschutzerklärung ist aktuell gültig und hat den Stand Oktober 2026.
             Durch die Weiterentwicklung unserer Website können Änderungen notwendig werden.
           </p>
 
           <p style={{ marginTop: '32px' }}>
-            <a href="/">← Zurück zum BFSG-Checker</a>
+            <a href="/">← Zurück zum BFSG-Check</a>
           </p>
         </div>
       </main>
 
       <div className="wrap">
-        <footer className="footer">
-          <p>
-            Ein Tool von{' '}
-            <a href="https://webmaster.plus" target="_blank" rel="noopener noreferrer">webmaster.plus</a>
-            {' '}· Teil des{' '}
-            <a href="https://www.pan21.info" target="_blank" rel="noopener noreferrer">PAN21-Netzwerks</a>
-            {' '}·{' '}
-            <ImpressumWidget />
-            {' '}·{' '}
-            <a href="/datenschutz">Datenschutz</a>
-            {' '}·{' '}
-            <a href="/kontakt">Kontakt</a>
-          </p>
-        </footer>
+        <SiteFooter lang="de" />
       </div>
     </>
   );

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'BFSG-Check — Ist Ihre Website barrierefrei?',
     description: 'Kostenloser BFSG-Check: Alt-Texte, Sprachangabe, Überschriften, Formulare, ARIA, Fokus-Indikatoren.',
-    url: 'https://bfsg-checken.de',
+    url: SITE_URL,
     siteName: 'bfsg-checken.de',
     locale: 'de_DE',
     alternateLocale: ['en_US'],

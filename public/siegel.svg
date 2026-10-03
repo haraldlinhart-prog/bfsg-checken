@@ -5,44 +5,45 @@
 <circle cx="120" cy="120" r="109" fill="none" stroke="#1a1a2e" stroke-width="1"/>
 <circle cx="120" cy="120" r="80" fill="#f0f4f8" stroke="#1a1a2e" stroke-width="2"/>
 <g fill="#1a1a2e" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-anchor="middle">
-<text transform="translate(32.722 85.091) rotate(-68.2)" font-size="11.5" font-weight="bold">B</text>
-<text transform="translate(37.003 75.870) rotate(-62)" font-size="11.5" font-weight="bold">A</text>
-<text transform="translate(42.254 67.164) rotate(-55.8)" font-size="11.5" font-weight="bold">R</text>
-<text transform="translate(48.415 59.077) rotate(-49.6)" font-size="11.5" font-weight="bold">R</text>
-<text transform="translate(55.414 51.702) rotate(-43.4)" font-size="11.5" font-weight="bold">I</text>
-<text transform="translate(63.168 45.126) rotate(-37.2)" font-size="11.5" font-weight="bold">E</text>
-<text transform="translate(71.586 39.426) rotate(-31)" font-size="11.5" font-weight="bold">R</text>
-<text transform="translate(80.572 34.669) rotate(-24.8)" font-size="11.5" font-weight="bold">E</text>
-<text transform="translate(90.018 30.910) rotate(-18.6)" font-size="11.5" font-weight="bold">F</text>
-<text transform="translate(99.815 28.193) rotate(-12.4)" font-size="11.5" font-weight="bold">R</text>
-<text transform="translate(109.848 26.550) rotate(-6.2)" font-size="11.5" font-weight="bold">E</text>
-<text transform="translate(120.000 26.000) rotate(0)" font-size="11.5" font-weight="bold">I</text>
-<text transform="translate(130.152 26.550) rotate(6.2)" font-size="11.5" font-weight="bold">H</text>
-<text transform="translate(140.185 28.193) rotate(12.4)" font-size="11.5" font-weight="bold">E</text>
-<text transform="translate(149.982 30.910) rotate(18.6)" font-size="11.5" font-weight="bold">I</text>
-<text transform="translate(159.428 34.669) rotate(24.8)" font-size="11.5" font-weight="bold">T</text>
-<text transform="translate(168.414 39.426) rotate(31)" font-size="11.5" font-weight="bold"> </text>
-<text transform="translate(176.832 45.126) rotate(37.2)" font-size="11.5" font-weight="bold">G</text>
-<text transform="translate(184.586 51.702) rotate(43.4)" font-size="11.5" font-weight="bold">E</text>
-<text transform="translate(191.585 59.077) rotate(49.6)" font-size="11.5" font-weight="bold">P</text>
-<text transform="translate(197.746 67.164) rotate(55.8)" font-size="11.5" font-weight="bold">R</text>
-<text transform="translate(202.997 75.870) rotate(62)" font-size="11.5" font-weight="bold">Ü</text>
-<text transform="translate(207.278 85.091) rotate(68.2)" font-size="11.5" font-weight="bold">F</text>
-<text transform="translate(44.942 187.582) rotate(48)" font-size="10" font-weight="bold">B</text>
-<text transform="translate(50.861 193.626) rotate(43.2)" font-size="10" font-weight="bold">F</text>
-<text transform="translate(57.264 199.153) rotate(38.4)" font-size="10" font-weight="bold">S</text>
-<text transform="translate(64.107 204.125) rotate(33.6)" font-size="10" font-weight="bold">G</text>
-<text transform="translate(71.343 208.507) rotate(28.8)" font-size="10" font-weight="bold">-</text>
-<text transform="translate(78.920 212.268) rotate(24)" font-size="10" font-weight="bold">C</text>
-<text transform="translate(86.784 215.382) rotate(19.2)" font-size="10" font-weight="bold">H</text>
-<text transform="translate(94.882 217.827) rotate(14.4)" font-size="10" font-weight="bold">E</text>
+<text transform="translate(30.962 89.862) rotate(-71.3)" font-size="11.5" font-weight="bold">B</text>
+<text transform="translate(34.738 80.423) rotate(-65.1)" font-size="11.5" font-weight="bold">A</text>
+<text transform="translate(39.511 71.446) rotate(-58.9)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(45.225 63.037) rotate(-52.7)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(51.815 55.295) rotate(-46.5)" font-size="11.5" font-weight="bold">I</text>
+<text transform="translate(59.202 48.309) rotate(-40.3)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(67.300 42.162) rotate(-34.1)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(76.015 36.926) rotate(-27.9)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(85.244 32.662) rotate(-21.7)" font-size="11.5" font-weight="bold">F</text>
+<text transform="translate(94.880 29.419) rotate(-15.5)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(104.809 27.236) rotate(-9.3)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(114.917 26.138) rotate(-3.1)" font-size="11.5" font-weight="bold">I</text>
+<text transform="translate(125.083 26.138) rotate(3.1)" font-size="11.5" font-weight="bold">H</text>
+<text transform="translate(135.191 27.236) rotate(9.3)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(145.120 29.419) rotate(15.5)" font-size="11.5" font-weight="bold">I</text>
+<text transform="translate(154.756 32.662) rotate(21.7)" font-size="11.5" font-weight="bold">T</text>
+<text transform="translate(163.985 36.926) rotate(27.9)" font-size="11.5" font-weight="bold"> </text>
+<text transform="translate(172.700 42.162) rotate(34.1)" font-size="11.5" font-weight="bold">G</text>
+<text transform="translate(180.798 48.309) rotate(40.3)" font-size="11.5" font-weight="bold">E</text>
+<text transform="translate(188.185 55.295) rotate(46.5)" font-size="11.5" font-weight="bold">P</text>
+<text transform="translate(194.775 63.037) rotate(52.7)" font-size="11.5" font-weight="bold">R</text>
+<text transform="translate(200.489 71.446) rotate(58.9)" font-size="11.5" font-weight="bold">Ü</text>
+<text transform="translate(205.262 80.423) rotate(65.1)" font-size="11.5" font-weight="bold">F</text>
+<text transform="translate(209.038 89.862) rotate(71.3)" font-size="11.5" font-weight="bold">T</text>
+<text transform="translate(64.107 204.125) rotate(33.6)" font-size="10" font-weight="bold">B</text>
+<text transform="translate(71.343 208.507) rotate(28.8)" font-size="10" font-weight="bold">F</text>
+<text transform="translate(78.920 212.268) rotate(24)" font-size="10" font-weight="bold">S</text>
+<text transform="translate(86.784 215.382) rotate(19.2)" font-size="10" font-weight="bold">G</text>
+<text transform="translate(94.882 217.827) rotate(14.4)" font-size="10" font-weight="bold">-</text>
 <text transform="translate(103.156 219.586) rotate(9.6)" font-size="10" font-weight="bold">C</text>
-<text transform="translate(111.549 220.646) rotate(4.8)" font-size="10" font-weight="bold">K</text>
+<text transform="translate(111.549 220.646) rotate(4.8)" font-size="10" font-weight="bold">H</text>
 <text transform="translate(120.000 221.000) rotate(0)" font-size="10" font-weight="bold">E</text>
-<text transform="translate(128.451 220.646) rotate(-4.8)" font-size="10" font-weight="bold">N</text>
-<text transform="translate(136.844 219.586) rotate(-9.6)" font-size="10" font-weight="bold">.</text>
-<text transform="translate(145.118 217.827) rotate(-14.4)" font-size="10" font-weight="bold">D</text>
-<text transform="translate(153.216 215.382) rotate(-19.2)" font-size="10" font-weight="bold">E</text>
+<text transform="translate(128.451 220.646) rotate(-4.8)" font-size="10" font-weight="bold">C</text>
+<text transform="translate(136.844 219.586) rotate(-9.6)" font-size="10" font-weight="bold">K</text>
+<text transform="translate(145.118 217.827) rotate(-14.4)" font-size="10" font-weight="bold">E</text>
+<text transform="translate(153.216 215.382) rotate(-19.2)" font-size="10" font-weight="bold">N</text>
+<text transform="translate(161.080 212.268) rotate(-24)" font-size="10" font-weight="bold">.</text>
+<text transform="translate(168.657 208.507) rotate(-28.8)" font-size="10" font-weight="bold">D</text>
+<text transform="translate(175.893 204.125) rotate(-33.6)" font-size="10" font-weight="bold">E</text>
 </g>
 <circle cx="23" cy="126" r="3" fill="#8b5cf6"/>
 <circle cx="217" cy="126" r="3" fill="#8b5cf6"/>

@@ -40,12 +40,16 @@ async function supabaseUpsert(domain: string, badgeVerified: boolean, checks: Ch
 
 const HELP = {
   de: { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  en: { label: 'Get help from a webmaster', url: 'https://webmaster.plus' },
+  en: { label: 'Get help from a webmaster', url: 'https://webmaster.plus/en' },
 };
+
+/** Singular/plural helper: n === 1 ? one : many */
+const pl = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
 /** Raw findings of a page, independent of the UI language. */
 interface Facts {
   isHttps: boolean;
+  httpStatus: number;
   hasLang: boolean;
   imgCount: number;
   imgsWithoutAlt: number;
@@ -71,13 +75,24 @@ function sslCheck(isHttps: boolean, lang: Lang): CheckResult {
     status: isHttps ? 'green' : 'yellow',
     message: isHttps
       ? (en ? 'The page is served over HTTPS — the connection is encrypted.' : 'Die Seite läuft über HTTPS — Verbindung ist verschlüsselt.')
-      : (en ? 'The URL does not use HTTPS. HTTPS is recommended for accessible, trustworthy websites.' : 'Die URL verwendet kein HTTPS. Für barrierefreie, vertrauenswürdige Websites empfohlen.'),
-    fix: isHttps ? null : { label: en ? 'Set up an SSL certificate' : 'SSL-Zertifikat einrichten', url: 'https://pagespeed-plus.de' },
+      : (en ? 'The page is not served over HTTPS — the connection is not encrypted. HTTPS is standard for trustworthy websites.' : 'Die Seite läuft nicht über HTTPS — die Verbindung ist unverschlüsselt. HTTPS ist Standard für vertrauenswürdige Websites.'),
+    fix: isHttps ? null : { label: en ? 'Get help setting up SSL' : 'SSL-Zertifikat einrichten lassen', url: HELP[lang].url },
   };
 }
 
-function reachableCheck(ok: boolean, lang: Lang): CheckResult {
+function reachableCheck(ok: boolean, lang: Lang, httpStatus?: number): CheckResult {
   const en = lang === 'en';
+  if (ok && httpStatus && httpStatus >= 400) {
+    return {
+      id: 'erreichbar',
+      label: en ? 'Website reachable' : 'Website erreichbar',
+      status: 'red',
+      message: en
+        ? `The server responded with HTTP status ${httpStatus} instead of the page.`
+        : `Der Server hat mit HTTP-Status ${httpStatus} statt mit der Seite geantwortet.`,
+      fix: { label: en ? 'Check availability' : 'Verfügbarkeit prüfen', url: en ? 'https://site-ok.de/en' : 'https://site-ok.de' },
+    };
+  }
   return ok
     ? {
         id: 'erreichbar',
@@ -91,7 +106,7 @@ function reachableCheck(ok: boolean, lang: Lang): CheckResult {
         label: en ? 'Website reachable' : 'Website erreichbar',
         status: 'red',
         message: en ? 'The website could not be loaded.' : 'Die Website konnte nicht geladen werden.',
-        fix: { label: en ? 'Check availability' : 'Verfügbarkeit prüfen', url: 'https://site-ok.de' },
+        fix: { label: en ? 'Check availability' : 'Verfügbarkeit prüfen', url: en ? 'https://site-ok.de/en' : 'https://site-ok.de' },
       };
 }
 
@@ -99,7 +114,7 @@ function reachableCheck(ok: boolean, lang: Lang): CheckResult {
 function buildChecks(f: Facts, lang: Lang): CheckResult[] {
   const en = lang === 'en';
   const help = HELP[lang];
-  const checks: CheckResult[] = [sslCheck(f.isHttps, lang), reachableCheck(true, lang)];
+  const checks: CheckResult[] = [sslCheck(f.isHttps, lang), reachableCheck(true, lang, f.httpStatus)];
 
   // 2. Sprach-Attribut (lang)
   checks.push({
@@ -126,13 +141,13 @@ function buildChecks(f: Facts, lang: Lang): CheckResult[] {
   } else if (imgsWithoutAlt === 0) {
     altStatus = 'green';
     altMessage = en
-      ? `${imgCount} ${imgCount === 1 ? 'image' : 'images'} found — all of them have an alt attribute. ${imgsWithEmptyAlt > 0 ? `(${imgsWithEmptyAlt} marked as decorative with an empty alt="")` : ''}`
-      : `${imgCount} Bild(er) gefunden — alle haben ein alt-Attribut. ${imgsWithEmptyAlt > 0 ? `(${imgsWithEmptyAlt} dekorativ mit leerem alt="")` : ''}`;
+      ? `${imgCount} ${pl(imgCount, 'image', 'images')} found — ${imgCount === 1 ? 'it has' : 'all of them have'} an alt attribute.${imgsWithEmptyAlt > 0 ? ` (${imgsWithEmptyAlt} marked as decorative with an empty alt="")` : ''}`
+      : `${imgCount} ${pl(imgCount, 'Bild', 'Bilder')} gefunden — ${pl(imgCount, 'es hat', 'alle haben')} ein alt-Attribut.${imgsWithEmptyAlt > 0 ? ` (${imgsWithEmptyAlt} als dekorativ markiert mit leerem alt="")` : ''}`;
   } else {
     altStatus = imgsWithoutAlt > 2 ? 'red' : 'yellow';
     altMessage = en
       ? `${imgsWithoutAlt} of ${imgCount} ${imgCount === 1 ? 'image' : 'images'} ${imgsWithoutAlt === 1 ? 'is' : 'are'} missing the alt attribute. Alt texts are essential for screen reader users. (WCAG 1.1.1)`
-      : `${imgsWithoutAlt} von ${imgCount} Bild(ern) fehlt das alt-Attribut. Alt-Texte sind für Screenreader-Nutzer essenziell. (WCAG 1.1.1)`;
+      : `Bei ${imgsWithoutAlt} von ${imgCount} ${pl(imgCount, 'Bild', 'Bildern')} fehlt das alt-Attribut. Alt-Texte sind für Screenreader-Nutzer essenziell. (WCAG 1.1.1)`;
   }
   checks.push({
     id: 'alt',
@@ -179,6 +194,7 @@ function buildChecks(f: Facts, lang: Lang): CheckResult[] {
   // 5. Formular-Labels
   const { inputCount, labelCount, hasAriaLabel } = f;
   const fields = (n: number) => `${n} ${n === 1 ? 'input field' : 'input fields'}`;
+  const felder = (n: number) => `${n} ${pl(n, 'Eingabefeld', 'Eingabefelder')}`;
   let formStatus: Status;
   let formMessage: string;
   if (inputCount === 0) {
@@ -188,17 +204,17 @@ function buildChecks(f: Facts, lang: Lang): CheckResult[] {
     formStatus = 'green';
     formMessage = en
       ? `${fields(inputCount)} found; labels or ARIA labels detected.`
-      : `${inputCount} Eingabefeld(er) gefunden, Labels oder ARIA-Labels erkannt.`;
+      : `${felder(inputCount)} gefunden; Labels oder ARIA-Labels erkannt.`;
   } else if (labelCount > 0) {
     formStatus = 'yellow';
     formMessage = en
       ? `${fields(inputCount)} but only ${labelCount} ${labelCount === 1 ? 'label' : 'labels'} found. Some fields may not be labelled properly. (WCAG 1.3.1)`
-      : `${inputCount} Eingabefeld(er), aber nur ${labelCount} Label(s) gefunden. Nicht alle Felder könnten ausreichend beschriftet sein. (WCAG 1.3.1)`;
+      : `${felder(inputCount)}, aber nur ${labelCount} ${pl(labelCount, 'Label', 'Labels')} gefunden. Möglicherweise sind nicht alle Felder ausreichend beschriftet. (WCAG 1.3.1)`;
   } else {
     formStatus = 'red';
     formMessage = en
       ? `${fields(inputCount)} without visible labels found. Screen readers cannot describe these fields. (WCAG 1.3.1)`
-      : `${inputCount} Eingabefeld(er) ohne sichtbare Labels gefunden. Screenreader können die Felder nicht beschreiben. (WCAG 1.3.1)`;
+      : `${felder(inputCount)} ohne Labels gefunden. Screenreader können ${pl(inputCount, 'das Feld', 'die Felder')} nicht beschreiben. (WCAG 1.3.1)`;
   }
   checks.push({
     id: 'forms',
@@ -235,8 +251,8 @@ function buildChecks(f: Facts, lang: Lang): CheckResult[] {
   } else if (hasMain || hasNav) {
     ariaStatus = 'yellow';
     ariaMessage = en
-      ? `Partial landmark structure detected (${hasMain ? '<main>' : ''} ${hasNav ? '<nav>' : ''}). A complete structure is recommended. (WCAG 1.3.6)`
-      : `Teilweise Landmark-Struktur erkannt (${hasMain ? '<main>' : ''} ${hasNav ? '<nav>' : ''}). Vollständige Strukturierung empfohlen. (WCAG 1.3.6)`;
+      ? `Partial landmark structure detected (only ${hasMain ? '<main>' : '<nav>'}, no ${hasMain ? '<nav>' : '<main>'}). A complete structure is recommended. (WCAG 1.3.6)`
+      : `Teilweise Landmark-Struktur erkannt (nur ${hasMain ? '<main>' : '<nav>'}, kein ${hasMain ? '<nav>' : '<main>'}). Eine vollständige Strukturierung wird empfohlen. (WCAG 1.3.6)`;
   } else {
     ariaStatus = 'yellow';
     ariaMessage = en
@@ -296,7 +312,7 @@ function buildChecks(f: Facts, lang: Lang): CheckResult[] {
           : 'Keine typischen generischen Link-Texte ("hier", "mehr", "weiter") gefunden.')
       : (en
           ? `${genericLinks} generic link ${genericLinks === 1 ? 'text' : 'texts'} detected ("click here", "more", "read more"). Screen reader users cannot tell such links apart without context. (WCAG 2.4.4)`
-          : `${genericLinks} generische(r) Link-Text(e) erkannt ("hier", "mehr", "weiter"). Screenreader-Nutzer können Links ohne Kontext nicht unterscheiden. (WCAG 2.4.4)`),
+          : `${genericLinks} ${pl(genericLinks, 'generischer Link-Text', 'generische Link-Texte')} erkannt ("hier", "mehr", "weiter"). Screenreader-Nutzer können Links ohne Kontext nicht unterscheiden. (WCAG 2.4.4)`),
     fix: genericLinks === 0 ? null : help,
   });
 
@@ -308,7 +324,7 @@ function buildChecks(f: Facts, lang: Lang): CheckResult[] {
     message: en
       ? 'Broken links can only be detected with a full crawl of your website.'
       : 'Defekte Links können nur durch einen vollständigen Crawl erkannt werden.',
-    fix: { label: en ? 'Check for broken links' : 'Defekte Links prüfen', url: 'https://kaputte-links.de' },
+    fix: { label: en ? 'Check for broken links' : 'Defekte Links prüfen', url: en ? 'https://kaputte-links.de/en' : 'https://kaputte-links.de' },
   });
 
   return checks;
@@ -332,13 +348,11 @@ export async function POST(req: NextRequest) {
   const parsedUrl = new URL(url);
   const domain = parsedUrl.hostname.replace(/^www\./, '');
 
-  // 1. SSL
-  const isHttps = parsedUrl.protocol === 'https:';
-
   // Fetch the page
   let html = '';
   let fetchError = false;
   let finalUrl = url;
+  let httpStatus = 0;
   try {
     const resp = await fetch(url, {
       redirect: 'follow',
@@ -349,11 +363,15 @@ export async function POST(req: NextRequest) {
       },
       signal: AbortSignal.timeout(10000),
     });
-    finalUrl = resp.url;
+    finalUrl = resp.url || url;
+    httpStatus = resp.status;
     html = await resp.text();
   } catch {
     fetchError = true;
   }
+
+  // 1. SSL — judged by the URL actually served (after redirects), so http → https redirects count as HTTPS
+  const isHttps = new URL(finalUrl).protocol === 'https:';
 
   if (fetchError) {
     return NextResponse.json({ url: finalUrl, checks: [sslCheck(isHttps, lang), reachableCheck(false, lang)] });
@@ -368,23 +386,48 @@ export async function POST(req: NextRequest) {
     lc.includes(`bfsg-checken.de/badge/www.${domain}`);
 
   const siegelHtml = lang === 'en'
-    ? `<a href="https://bfsg-checken.de/en" target="_blank" rel="noopener noreferrer" title="Accessibility checked (BFSG) by bfsg-checken.de">\n  <img src="https://bfsg-checken.de/siegel.svg" alt="Accessibility checked (BFSG) – bfsg-checken.de" width="120" height="120">\n</a>`
-    : `<a href="https://bfsg-checken.de" target="_blank" rel="noopener noreferrer" title="BFSG-geprüft von bfsg-checken.de">\n  <img src="https://bfsg-checken.de/siegel.svg" alt="BFSG-geprüft" width="120" height="120">\n</a>`;
+    ? `<a href="https://www.bfsg-checken.de/en" target="_blank" rel="noopener noreferrer" title="Accessibility checked (BFSG) by bfsg-checken.de">\n  <img src="https://www.bfsg-checken.de/siegel.svg" alt="Accessibility checked (BFSG) – bfsg-checken.de" width="120" height="120">\n</a>`
+    : `<a href="https://www.bfsg-checken.de" target="_blank" rel="noopener noreferrer" title="BFSG-geprüft von bfsg-checken.de">\n  <img src="https://www.bfsg-checken.de/siegel.svg" alt="BFSG-geprüft – bfsg-checken.de" width="120" height="120">\n</a>`;
 
   if (!hasBadge) {
     await supabaseUpsert(domain, false, []);
     return NextResponse.json({
       requiresBadge: true,
       domain,
-      badgeUrl: `https://bfsg-checken.de/badge/${domain}.svg`,
+      badgeUrl: `https://www.bfsg-checken.de/badge/${domain}.svg`,
       badgeHtml: siegelHtml,
     });
   }
 
   const imgTags = html.match(/<img[^>]*>/gi) || [];
 
+  // Focus styles usually live in external stylesheets — load up to 5 of them for the focus heuristic
+  const cssHrefs = (html.match(/<link\b[^>]*>/gi) || [])
+    .filter((tag) => /\brel\s*=\s*["']?stylesheet/i.test(tag))
+    .map((tag) => tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1])
+    .filter((href): href is string => !!href)
+    .slice(0, 5);
+  const cssTexts = await Promise.all(
+    cssHrefs.map(async (href) => {
+      try {
+        const cssUrl = new URL(href.replace(/&amp;/g, '&'), finalUrl);
+        if (!/^https?:$/.test(cssUrl.protocol)) return '';
+        const r = await fetch(cssUrl.toString(), {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; BFSG-Checken/1.0; +https://www.bfsg-checken.de)' },
+          signal: AbortSignal.timeout(5000),
+        });
+        return r.ok ? (await r.text()).slice(0, 2_000_000) : '';
+      } catch {
+        return '';
+      }
+    })
+  );
+  // Inline <style> blocks are part of the HTML already; add the external CSS
+  const styles = (lc + '\n' + cssTexts.join('\n').toLowerCase());
+
   const facts: Facts = {
     isHttps,
+    httpStatus,
     // 2. lang
     hasLang: /\<html[^>]+lang\s*=\s*["'][a-z]/i.test(html),
     // 3. alt
@@ -411,14 +454,10 @@ export async function POST(req: NextRequest) {
     hasNav: lc.includes('<nav') || lc.includes('role="navigation"') || lc.includes("role='navigation'"),
     // 8. focus (heuristic)
     hasFocusVisible:
-      lc.includes(':focus') ||
-      lc.includes('focus-visible') ||
-      lc.includes('outline'),
-    hasFocusNone:
-      lc.includes('outline: none') ||
-      lc.includes('outline:none') ||
-      lc.includes('outline: 0') ||
-      lc.includes('outline:0'),
+      styles.includes(':focus') ||
+      styles.includes('focus-visible') ||
+      styles.includes('outline'),
+    hasFocusNone: /outline\s*:\s*(none|0)(?![.\d])/.test(styles),
     // 9. generic link texts (heuristic)
     genericLinks: (html.match(/<a[^>]*>\s*(hier|click here|mehr|more|weiter|details|lesen|read more|here)\s*<\/a>/gi) || []).length,
   };

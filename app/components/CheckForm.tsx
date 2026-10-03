@@ -20,15 +20,19 @@ interface ApiResponse {
   badgeHtml?: string;
 }
 
-const TOOLS = [
-  { emoji: '🔒', name: 'dsgvo-checken.de', desc: { de: 'DSGVO-Check', en: 'GDPR check' }, url: 'https://dsgvo-checken.de' },
-  { emoji: '📄', name: 'Impressum-Free', desc: { de: 'Impressum-Generator', en: 'Legal notice (Impressum) generator' }, url: 'https://impressum-free.de' },
-  { emoji: '📊', name: 'PAN21counter', desc: { de: 'Besucherzähler', en: 'Visitor counter' }, url: 'https://pan21counter.de' },
-  { emoji: '🟢', name: 'site-ok.de', desc: { de: 'Erreichbarkeit prüfen', en: 'Uptime check' }, url: 'https://site-ok.de' },
-  { emoji: '⚡', name: 'PageSpeed-Plus', desc: { de: 'Google-PageSpeed-Check', en: 'Google PageSpeed check' }, url: 'https://pagespeed-plus.de' },
-  { emoji: '🔗', name: 'kaputte-links.de', desc: { de: 'Defekte Links finden', en: 'Find broken links' }, url: 'https://kaputte-links.de' },
-  { emoji: '🛡️', name: 'Spam-Abwehr', desc: { de: 'Spam-Blockliste', en: 'Spam blocklist' }, url: 'https://spam-abwehr.de' },
-  { emoji: '⚖️', name: 'abmahnschutz.pro', desc: { de: 'Abmahnschutz', en: 'Protection against cease-and-desist letters' }, url: 'https://www.abmahnschutz.pro' },
+/** PAN21 network tools (source: shop.pan21.com/api/webmaster-tools?v=2); English pages link to the /en versions. */
+const TOOLS: { emoji: string; name: Record<Lang, string>; desc: Record<Lang, string>; url: Record<Lang, string> }[] = [
+  { emoji: '🔒', name: { de: 'dsgvo-checken.de', en: 'dsgvo-checken.de' }, desc: { de: 'DSGVO-Check', en: 'GDPR check' }, url: { de: 'https://dsgvo-checken.de', en: 'https://dsgvo-checken.de/en' } },
+  { emoji: '📄', name: { de: 'Impressum-Free', en: 'Impressum-Free' }, desc: { de: 'Impressum-Generator', en: 'Legal notice (Impressum) generator' }, url: { de: 'https://impressum-free.de', en: 'https://impressum-free.de/en' } },
+  { emoji: '📧', name: { de: 'email-checken.de', en: 'email-checken.de' }, desc: { de: 'E-Mail-Sicherheitscheck', en: 'Email security check' }, url: { de: 'https://email-checken.de', en: 'https://email-checken.de/en' } },
+  { emoji: '📊', name: { de: 'PAN21counter', en: 'PAN21counter' }, desc: { de: 'Besucherzähler', en: 'Visitor counter' }, url: { de: 'https://pan21counter.de', en: 'https://pan21counter.de/en' } },
+  { emoji: '🟢', name: { de: 'site-ok.de', en: 'site-ok.de' }, desc: { de: 'Erreichbarkeit prüfen', en: 'Uptime check' }, url: { de: 'https://site-ok.de', en: 'https://site-ok.de/en' } },
+  { emoji: '⚡', name: { de: 'PageSpeed-Plus', en: 'PageSpeed-Plus' }, desc: { de: 'Google-PageSpeed-Check', en: 'Google PageSpeed check' }, url: { de: 'https://pagespeed-plus.de', en: 'https://pagespeed-plus.de/en' } },
+  { emoji: '🔗', name: { de: 'kaputte-links.de', en: 'kaputte-links.de' }, desc: { de: 'Defekte Links finden', en: 'Find broken links' }, url: { de: 'https://kaputte-links.de', en: 'https://kaputte-links.de/en' } },
+  { emoji: '🛡️', name: { de: 'Spam-Abwehr', en: 'Spam-Abwehr' }, desc: { de: 'Spam-Blockliste für Formulare', en: 'Spam blocklist for forms' }, url: { de: 'https://spam-abwehr.de', en: 'https://spam-abwehr.de/en' } },
+  { emoji: '✋', name: { de: 'anti-spam.info', en: 'anti-spam.info' }, desc: { de: 'Anti-Spam-Versprechen', en: 'Anti-spam pledge' }, url: { de: 'https://anti-spam.info', en: 'https://anti-spam.info/en' } },
+  { emoji: '⚖️', name: { de: 'abmahnschutz.pro', en: 'abmahnschutz.pro' }, desc: { de: 'Erste Hilfe bei Abmahnungen', en: 'Help with cease-and-desist letters' }, url: { de: 'https://www.abmahnschutz.pro', en: 'https://www.abmahnschutz.pro/en' } },
+  { emoji: '🔍', name: { de: 'suchmaschinen.pro', en: 'search-engines.pro' }, desc: { de: 'SEO-Artikel auf Ihrer Domain', en: 'SEO articles on your own domain' }, url: { de: 'https://www.suchmaschinen.pro', en: 'https://www.search-engines.pro' } },
 ];
 
 const T = {
@@ -72,8 +76,8 @@ const T = {
     verifiedChip: '♿ BFSG-geprüft',
     summary: 'Zusammenfassung',
     ok: 'OK',
-    notice: 'Hinweis',
-    problem: 'Problem',
+    notice: ['Hinweis', 'Hinweise'],
+    problem: ['Problem', 'Probleme'],
     status: { green: 'OK', yellow: 'Hinweis', red: 'Problem' },
     toolsTitle: 'Weitere kostenlose Webmaster-Tools',
     toolsDesc: 'Teil des PAN21-Netzwerks — alle Tools von echten Webmastern für echte Webmaster.',
@@ -118,11 +122,11 @@ const T = {
     verifiedChip: '♿ BFSG seal verified',
     summary: 'Summary',
     ok: 'OK',
-    notice: 'warning',
-    problem: 'issue',
+    notice: ['warning', 'warnings'],
+    problem: ['issue', 'issues'],
     status: { green: 'OK', yellow: 'Warning', red: 'Issue' },
     toolsTitle: 'More free webmaster tools',
-    toolsDesc: 'Part of the PAN21 network — tools built by real webmasters for real webmasters (most of them in German).',
+    toolsDesc: 'Part of the PAN21 network — all tools built by real webmasters for real webmasters.',
   },
 };
 
@@ -152,7 +156,10 @@ export default function CheckForm({ lang = 'de' }: { lang?: Lang }) {
         setApiError(data.error ?? t.unknownError);
       } else {
         setResult(data);
+        // Move keyboard/screen reader focus to the result heading and bring it into view
         setTimeout(() => {
+          const heading = document.getElementById('results-heading');
+          heading?.focus({ preventScroll: true });
           document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
       }
@@ -181,21 +188,22 @@ export default function CheckForm({ lang = 'de' }: { lang?: Lang }) {
       }
     : null;
 
-  // English plural ("1 warning" / "2 warnings"); German labels stay as they were.
-  const plural = (n: number, word: string) => (lang === 'en' && n !== 1 ? word + 's' : word);
+  // Singular/plural: "1 Hinweis" / "2 Hinweise", "1 warning" / "2 warnings"
+  const plural = (n: number, forms: string[]) => (n === 1 ? forms[0] : forms[1]);
 
   return (
     <>
       {/* Check form */}
       <form className="checkForm" onSubmit={handleSubmit} noValidate>
+        <label htmlFor="check-url" className="srOnly">{t.inputLabel}</label>
         <input
+          id="check-url"
           className="checkInput"
           type="url"
           value={inputUrl}
           onChange={(e) => setInputUrl(e.target.value)}
           placeholder={t.placeholder}
           required
-          aria-label={t.inputLabel}
           autoComplete="url"
           inputMode="url"
         />
@@ -220,7 +228,7 @@ export default function CheckForm({ lang = 'de' }: { lang?: Lang }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/siegel.svg" alt={t.sealAlt} width="140" height="140" />
             </div>
-            <h2 className="badgeGateTitle">{t.gateTitle}</h2>
+            <h2 id="results-heading" tabIndex={-1} className="badgeGateTitle">{t.gateTitle}</h2>
             <p className="badgeGateDesc">{t.gateDesc}</p>
 
             <ol className="badgeSteps">
@@ -263,14 +271,18 @@ export default function CheckForm({ lang = 'de' }: { lang?: Lang }) {
       {/* Results */}
       {result && !result.requiresBadge && (
         <section id="results" className="results">
-          <p className="resultsUrl">
+          <h2 id="results-heading" tabIndex={-1} className="resultsUrl">
             {t.resultFor}{' '}
             <a href={result.url} target="_blank" rel="noopener noreferrer">
               {result.url}
             </a>
-            {' '}·{' '}
-            <span className="badgeVerifiedChip">{t.verifiedChip}</span>
-          </p>
+            {result.checks.length > 2 && (
+              <>
+                {' '}
+                <span className="badgeVerifiedChip">{t.verifiedChip}</span>
+              </>
+            )}
+          </h2>
 
           {counts && (
             <div className="summaryBar">
@@ -319,10 +331,10 @@ export default function CheckForm({ lang = 'de' }: { lang?: Lang }) {
           <p>{t.toolsDesc}</p>
           <div className="toolsGrid">
             {TOOLS.map((tool) => (
-              <a key={tool.url} className="toolCard" href={tool.url} target="_blank" rel="noopener noreferrer">
+              <a key={tool.url[lang]} className="toolCard" href={tool.url[lang]} target="_blank" rel="noopener noreferrer">
                 <span className="toolEmoji" aria-hidden="true">{tool.emoji}</span>
                 <div>
-                  <div className="toolName">{tool.name}</div>
+                  <div className="toolName">{tool.name[lang]}</div>
                   <div className="toolDesc">{tool.desc[lang]}</div>
                 </div>
               </a>
