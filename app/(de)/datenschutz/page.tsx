@@ -1,4 +1,5 @@
-import ImpressumWidget from '../ImpressumWidget';
+import ImpressumWidget from '../../components/ImpressumWidget';
+import SiteHeader from '../../components/SiteHeader';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -9,13 +10,7 @@ export const metadata: Metadata = {
 export default function Datenschutz() {
   return (
     <>
-      <header className="header">
-        <div className="wrap">
-          <a className="header-logo" href="/">
-            ♿ <span>BFSG</span>-checken.de
-          </a>
-        </div>
-      </header>
+      <SiteHeader lang="de" deHref="/datenschutz" enHref="/en" />
 
       <main>
         <div className="wrap" style={{ maxWidth: '720px', padding: '48px 24px' }}>

@@ -5,10 +5,13 @@ export const runtime = 'edge';
 const SUPABASE_URL = 'https://frbvsdumltlzisddrlbi.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyYnZzZHVtbHRsemlzZGRybGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNTk4NDQsImV4cCI6MjA5NzgzNTg0NH0.8Vrrs8tIyjdGrD3xGoQ3lkpv4G3LBvy4bpeXpaQ8OGY';
 
+type Lang = 'de' | 'en';
+type Status = 'green' | 'yellow' | 'red';
+
 interface CheckResult {
   id: string;
   label: string;
-  status: 'green' | 'yellow' | 'red';
+  status: Status;
   message: string;
   fix: { label: string; url: string } | null;
 }
@@ -35,33 +38,302 @@ async function supabaseUpsert(domain: string, badgeVerified: boolean, checks: Ch
   }
 }
 
-export async function POST(req: NextRequest) {
-  let url: string;
-  try {
-    const body = await req.json();
-    url = (body.url ?? '').trim();
-    if (!url) return NextResponse.json({ error: 'URL fehlt' }, { status: 400 });
-    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-    new URL(url); // validate
-  } catch {
-    return NextResponse.json({ error: 'Ungültige URL' }, { status: 400 });
-  }
+const HELP = {
+  de: { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
+  en: { label: 'Get help from a webmaster', url: 'https://webmaster.plus' },
+};
 
-  const parsedUrl = new URL(url);
-  const domain = parsedUrl.hostname.replace(/^www\./, '');
-  const checks: CheckResult[] = [];
+/** Raw findings of a page, independent of the UI language. */
+interface Facts {
+  isHttps: boolean;
+  hasLang: boolean;
+  imgCount: number;
+  imgsWithoutAlt: number;
+  imgsWithEmptyAlt: number;
+  h1Count: number;
+  h2Count: number;
+  inputCount: number;
+  labelCount: number;
+  hasAriaLabel: boolean;
+  hasSkipLink: boolean;
+  hasMain: boolean;
+  hasNav: boolean;
+  hasFocusVisible: boolean;
+  hasFocusNone: boolean;
+  genericLinks: number;
+}
 
-  // 1. SSL
-  const isHttps = parsedUrl.protocol === 'https:';
-  checks.push({
+function sslCheck(isHttps: boolean, lang: Lang): CheckResult {
+  const en = lang === 'en';
+  return {
     id: 'ssl',
     label: 'SSL / HTTPS',
     status: isHttps ? 'green' : 'yellow',
     message: isHttps
-      ? 'Die Seite läuft über HTTPS — Verbindung ist verschlüsselt.'
-      : 'Die URL verwendet kein HTTPS. Für barrierefreie, vertrauenswürdige Websites empfohlen.',
-    fix: isHttps ? null : { label: 'SSL-Zertifikat einrichten', url: 'https://pagespeed-plus.de' },
+      ? (en ? 'The page is served over HTTPS — the connection is encrypted.' : 'Die Seite läuft über HTTPS — Verbindung ist verschlüsselt.')
+      : (en ? 'The URL does not use HTTPS. HTTPS is recommended for accessible, trustworthy websites.' : 'Die URL verwendet kein HTTPS. Für barrierefreie, vertrauenswürdige Websites empfohlen.'),
+    fix: isHttps ? null : { label: en ? 'Set up an SSL certificate' : 'SSL-Zertifikat einrichten', url: 'https://pagespeed-plus.de' },
+  };
+}
+
+function reachableCheck(ok: boolean, lang: Lang): CheckResult {
+  const en = lang === 'en';
+  return ok
+    ? {
+        id: 'erreichbar',
+        label: en ? 'Website reachable' : 'Website erreichbar',
+        status: 'green',
+        message: en ? 'The website is reachable and responded.' : 'Die Website ist erreichbar und hat geantwortet.',
+        fix: null,
+      }
+    : {
+        id: 'erreichbar',
+        label: en ? 'Website reachable' : 'Website erreichbar',
+        status: 'red',
+        message: en ? 'The website could not be loaded.' : 'Die Website konnte nicht geladen werden.',
+        fix: { label: en ? 'Check availability' : 'Verfügbarkeit prüfen', url: 'https://site-ok.de' },
+      };
+}
+
+/** Builds the full list of check results for a page in the given language. */
+function buildChecks(f: Facts, lang: Lang): CheckResult[] {
+  const en = lang === 'en';
+  const help = HELP[lang];
+  const checks: CheckResult[] = [sslCheck(f.isHttps, lang), reachableCheck(true, lang)];
+
+  // 2. Sprach-Attribut (lang)
+  checks.push({
+    id: 'lang',
+    label: en ? 'Language attribute (lang)' : 'Sprachattribut (lang)',
+    status: f.hasLang ? 'green' : 'red',
+    message: f.hasLang
+      ? (en
+          ? 'The <html> element has a lang attribute — screen readers can detect the page language correctly.'
+          : 'Das <html>-Element hat ein lang-Attribut — Screenreader können die Sprache korrekt erkennen.')
+      : (en
+          ? 'The <html> element has no lang attribute, so screen readers cannot detect the page language. (WCAG 3.1.1)'
+          : 'Kein lang-Attribut am <html>-Element. Screenreader können die Sprache nicht erkennen. (WCAG 3.1.1)'),
+    fix: f.hasLang ? null : help,
   });
+
+  // 3. Alt-Texte bei Bildern
+  const { imgCount, imgsWithoutAlt, imgsWithEmptyAlt } = f;
+  let altStatus: Status;
+  let altMessage: string;
+  if (imgCount === 0) {
+    altStatus = 'green';
+    altMessage = en ? 'No images found — nothing to do.' : 'Keine Bilder gefunden — kein Handlungsbedarf.';
+  } else if (imgsWithoutAlt === 0) {
+    altStatus = 'green';
+    altMessage = en
+      ? `${imgCount} ${imgCount === 1 ? 'image' : 'images'} found — all of them have an alt attribute. ${imgsWithEmptyAlt > 0 ? `(${imgsWithEmptyAlt} marked as decorative with an empty alt="")` : ''}`
+      : `${imgCount} Bild(er) gefunden — alle haben ein alt-Attribut. ${imgsWithEmptyAlt > 0 ? `(${imgsWithEmptyAlt} dekorativ mit leerem alt="")` : ''}`;
+  } else {
+    altStatus = imgsWithoutAlt > 2 ? 'red' : 'yellow';
+    altMessage = en
+      ? `${imgsWithoutAlt} of ${imgCount} ${imgCount === 1 ? 'image is' : 'images are'} missing the alt attribute. Alt texts are essential for screen reader users. (WCAG 1.1.1)`
+      : `${imgsWithoutAlt} von ${imgCount} Bild(ern) fehlt das alt-Attribut. Alt-Texte sind für Screenreader-Nutzer essenziell. (WCAG 1.1.1)`;
+  }
+  checks.push({
+    id: 'alt',
+    label: en ? 'Alt text for images' : 'Alt-Texte für Bilder',
+    status: altStatus,
+    message: altMessage,
+    fix: altStatus === 'green' ? null : help,
+  });
+
+  // 4. Überschriften-Struktur
+  const { h1Count, h2Count } = f;
+  const hasHeadings = h1Count > 0 || h2Count > 0;
+  let headingStatus: Status;
+  let headingMessage: string;
+  if (!hasHeadings) {
+    headingStatus = 'red';
+    headingMessage = en
+      ? 'No H1 or H2 headings found. A logical heading structure is essential for screen readers and navigation. (WCAG 1.3.1)'
+      : 'Keine H1- oder H2-Überschriften gefunden. Eine logische Überschriftenstruktur ist für Screenreader und Navigation essenziell. (WCAG 1.3.1)';
+  } else if (h1Count === 0) {
+    headingStatus = 'yellow';
+    headingMessage = en
+      ? 'No H1 heading found. Every page should have one H1 as its main heading.'
+      : 'Keine H1-Überschrift gefunden. Jede Seite sollte eine H1 als Hauptüberschrift haben.';
+  } else if (h1Count > 1) {
+    headingStatus = 'yellow';
+    headingMessage = en
+      ? `${h1Count} H1 headings found. Each page should have exactly one H1.`
+      : `${h1Count} H1-Überschriften gefunden. Pro Seite sollte es genau eine H1 geben.`;
+  } else {
+    headingStatus = 'green';
+    headingMessage = en
+      ? `Heading structure in place: 1× H1, ${h2Count}× H2.`
+      : `Überschriftenstruktur vorhanden: 1× H1, ${h2Count}× H2.`;
+  }
+  checks.push({
+    id: 'headings',
+    label: en ? 'Heading structure' : 'Überschriften-Struktur',
+    status: headingStatus,
+    message: headingMessage,
+    fix: headingStatus === 'green' ? null : help,
+  });
+
+  // 5. Formular-Labels
+  const { inputCount, labelCount, hasAriaLabel } = f;
+  const fields = (n: number) => `${n} ${n === 1 ? 'input field' : 'input fields'}`;
+  let formStatus: Status;
+  let formMessage: string;
+  if (inputCount === 0) {
+    formStatus = 'green';
+    formMessage = en ? 'No text input fields found — nothing to do.' : 'Keine Texteingabefelder gefunden — kein Handlungsbedarf.';
+  } else if (labelCount >= inputCount || hasAriaLabel) {
+    formStatus = 'green';
+    formMessage = en
+      ? `${fields(inputCount)} found; labels or ARIA labels detected.`
+      : `${inputCount} Eingabefeld(er) gefunden, Labels oder ARIA-Labels erkannt.`;
+  } else if (labelCount > 0) {
+    formStatus = 'yellow';
+    formMessage = en
+      ? `${fields(inputCount)} but only ${labelCount} ${labelCount === 1 ? 'label' : 'labels'} found. Some fields may not be labelled properly. (WCAG 1.3.1)`
+      : `${inputCount} Eingabefeld(er), aber nur ${labelCount} Label(s) gefunden. Nicht alle Felder könnten ausreichend beschriftet sein. (WCAG 1.3.1)`;
+  } else {
+    formStatus = 'red';
+    formMessage = en
+      ? `${fields(inputCount)} without visible labels found. Screen readers cannot describe these fields. (WCAG 1.3.1)`
+      : `${inputCount} Eingabefeld(er) ohne sichtbare Labels gefunden. Screenreader können die Felder nicht beschreiben. (WCAG 1.3.1)`;
+  }
+  checks.push({
+    id: 'forms',
+    label: en ? 'Form labels' : 'Formular-Labels',
+    status: formStatus,
+    message: formMessage,
+    fix: formStatus === 'green' ? null : help,
+  });
+
+  // 6. Skip-Links / Sprungnavigation
+  checks.push({
+    id: 'skiplink',
+    label: en ? 'Skip link' : 'Skip-Link / Sprungnavigation',
+    status: f.hasSkipLink ? 'green' : 'yellow',
+    message: f.hasSkipLink
+      ? (en
+          ? 'A skip link to the main navigation or content was found.'
+          : 'Ein Skip-Link zur Hauptnavigation oder zum Inhalt wurde gefunden.')
+      : (en
+          ? 'No skip link found. Keyboard and screen reader users have to tab through the entire navigation. (WCAG 2.4.1)'
+          : 'Kein Skip-Link gefunden. Tastatur- und Screenreader-Nutzer müssen die gesamte Navigation durchlaufen. (WCAG 2.4.1)'),
+    fix: f.hasSkipLink ? null : help,
+  });
+
+  // 7. ARIA-Landmarks
+  const { hasMain, hasNav } = f;
+  let ariaStatus: Status;
+  let ariaMessage: string;
+  if (hasMain && hasNav) {
+    ariaStatus = 'green';
+    ariaMessage = en
+      ? 'ARIA landmarks (<main>, <nav>) detected — screen reader users can navigate the page structure.'
+      : 'ARIA-Landmarks (<main>, <nav>) wurden erkannt — Seitenstruktur ist für Screenreader navigierbar.';
+  } else if (hasMain || hasNav) {
+    ariaStatus = 'yellow';
+    ariaMessage = en
+      ? `Partial landmark structure detected (${hasMain ? '<main>' : ''} ${hasNav ? '<nav>' : ''}). A complete structure is recommended. (WCAG 1.3.6)`
+      : `Teilweise Landmark-Struktur erkannt (${hasMain ? '<main>' : ''} ${hasNav ? '<nav>' : ''}). Vollständige Strukturierung empfohlen. (WCAG 1.3.6)`;
+  } else {
+    ariaStatus = 'yellow';
+    ariaMessage = en
+      ? 'No ARIA landmarks (<main>, <nav>) detected. Screen reader users cannot jump directly to the navigation or content. (WCAG 1.3.6)'
+      : 'Keine ARIA-Landmarks (<main>, <nav>) erkannt. Screenreader-Nutzer können nicht direkt zur Navigation oder zum Inhalt springen. (WCAG 1.3.6)';
+  }
+  checks.push({
+    id: 'aria',
+    label: en ? 'ARIA landmarks' : 'ARIA-Landmarks',
+    status: ariaStatus,
+    message: ariaMessage,
+    fix: ariaStatus === 'green' ? null : help,
+  });
+
+  // 8. Fokus-Indikatoren (Heuristik)
+  const { hasFocusVisible, hasFocusNone } = f;
+  let focusStatus: Status;
+  let focusMessage: string;
+  if (hasFocusVisible && !hasFocusNone) {
+    focusStatus = 'green';
+    focusMessage = en
+      ? 'Focus styles detected and no outline:none found — keyboard focus should be visible.'
+      : 'Fokus-Styles erkannt, kein outline:none gefunden — Tastaturnavigation sollte sichtbar sein.';
+  } else if (hasFocusNone && hasFocusVisible) {
+    focusStatus = 'yellow';
+    focusMessage = en
+      ? 'The focus outline is suppressed for some elements. Make sure every interactive element has a visible focus indicator. (WCAG 2.4.7)'
+      : 'Fokus-Outline wird für einige Elemente unterdrückt. Bitte sicherstellen, dass alle interaktiven Elemente sichtbare Fokus-Indikatoren haben. (WCAG 2.4.7)';
+  } else if (hasFocusNone) {
+    focusStatus = 'red';
+    focusMessage = en
+      ? 'outline:none found without replacement focus styling. Keyboard users cannot see which element has focus. (WCAG 2.4.7)'
+      : 'outline:none ohne Ersatz-Fokus-Styling gefunden. Tastaturnutzer sehen nicht, welches Element fokussiert ist. (WCAG 2.4.7)';
+  } else {
+    focusStatus = 'yellow';
+    focusMessage = en
+      ? 'No :focus CSS found. Make sure interactive elements have visible focus indicators. (WCAG 2.4.7)'
+      : 'Kein :focus-CSS gefunden. Bitte sicherstellen, dass interaktive Elemente sichtbare Fokus-Indikatoren haben. (WCAG 2.4.7)';
+  }
+  checks.push({
+    id: 'focus',
+    label: en ? 'Focus indicators' : 'Fokus-Indikatoren',
+    status: focusStatus,
+    message: focusMessage,
+    fix: focusStatus === 'green' ? null : help,
+  });
+
+  // 9. Links mit aussagekräftigem Text (Heuristik)
+  const { genericLinks } = f;
+  checks.push({
+    id: 'linktext',
+    label: en ? 'Descriptive link text' : 'Aussagekräftige Link-Texte',
+    status: genericLinks === 0 ? 'green' : 'yellow',
+    message: genericLinks === 0
+      ? (en
+          ? 'No typical generic link texts ("click here", "more", "read more") found.'
+          : 'Keine typischen generischen Link-Texte ("hier", "mehr", "weiter") gefunden.')
+      : (en
+          ? `${genericLinks} generic link ${genericLinks === 1 ? 'text' : 'texts'} detected ("click here", "more", "read more"). Screen reader users cannot tell such links apart without context. (WCAG 2.4.4)`
+          : `${genericLinks} generische(r) Link-Text(e) erkannt ("hier", "mehr", "weiter"). Screenreader-Nutzer können Links ohne Kontext nicht unterscheiden. (WCAG 2.4.4)`),
+    fix: genericLinks === 0 ? null : help,
+  });
+
+  // 10. Defekte Links (cross-sell)
+  checks.push({
+    id: 'links',
+    label: en ? 'Broken links' : 'Defekte Links',
+    status: 'yellow',
+    message: en
+      ? 'Broken links can only be detected with a full crawl of your website.'
+      : 'Defekte Links können nur durch einen vollständigen Crawl erkannt werden.',
+    fix: { label: en ? 'Check for broken links' : 'Defekte Links prüfen', url: 'https://kaputte-links.de' },
+  });
+
+  return checks;
+}
+
+export async function POST(req: NextRequest) {
+  let url: string;
+  // UI language: German by default, English when the English page sends lang: 'en'
+  let lang: Lang = req.nextUrl.searchParams.get('lang') === 'en' ? 'en' : 'de';
+  try {
+    const body = await req.json();
+    if (body.lang === 'en') lang = 'en';
+    url = (body.url ?? '').trim();
+    if (!url) return NextResponse.json({ error: lang === 'en' ? 'Please enter a URL.' : 'URL fehlt' }, { status: 400 });
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    new URL(url); // validate
+  } catch {
+    return NextResponse.json({ error: lang === 'en' ? 'Invalid URL' : 'Ungültige URL' }, { status: 400 });
+  }
+
+  const parsedUrl = new URL(url);
+  const domain = parsedUrl.hostname.replace(/^www\./, '');
+
+  // 1. SSL
+  const isHttps = parsedUrl.protocol === 'https:';
 
   // Fetch the page
   let html = '';
@@ -84,23 +356,8 @@ export async function POST(req: NextRequest) {
   }
 
   if (fetchError) {
-    checks.push({
-      id: 'erreichbar',
-      label: 'Website erreichbar',
-      status: 'red',
-      message: 'Die Website konnte nicht geladen werden.',
-      fix: { label: 'Verfügbarkeit prüfen', url: 'https://site-ok.de' },
-    });
-    return NextResponse.json({ url: finalUrl, checks });
+    return NextResponse.json({ url: finalUrl, checks: [sslCheck(isHttps, lang), reachableCheck(false, lang)] });
   }
-
-  checks.push({
-    id: 'erreichbar',
-    label: 'Website erreichbar',
-    status: 'green',
-    message: 'Die Website ist erreichbar und hat geantwortet.',
-    fix: null,
-  });
 
   const lc = html.toLowerCase();
 
@@ -110,7 +367,9 @@ export async function POST(req: NextRequest) {
     lc.includes(`bfsg-checken.de/badge/${domain}`) ||
     lc.includes(`bfsg-checken.de/badge/www.${domain}`);
 
-  const siegelHtml = `<a href="https://bfsg-checken.de" target="_blank" rel="noopener noreferrer" title="BFSG-geprüft von bfsg-checken.de">\n  <img src="https://bfsg-checken.de/siegel.svg" alt="BFSG-geprüft" width="120" height="120">\n</a>`;
+  const siegelHtml = lang === 'en'
+    ? `<a href="https://bfsg-checken.de/en" target="_blank" rel="noopener noreferrer" title="Accessibility checked (BFSG) by bfsg-checken.de">\n  <img src="https://bfsg-checken.de/siegel.svg" alt="Accessibility checked (BFSG) – bfsg-checken.de" width="120" height="120">\n</a>`
+    : `<a href="https://bfsg-checken.de" target="_blank" rel="noopener noreferrer" title="BFSG-geprüft von bfsg-checken.de">\n  <img src="https://bfsg-checken.de/siegel.svg" alt="BFSG-geprüft" width="120" height="120">\n</a>`;
 
   if (!hasBadge) {
     await supabaseUpsert(domain, false, []);
@@ -122,197 +381,50 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // 2. Sprach-Attribut (lang)
-  const hasLang = /\<html[^>]+lang\s*=\s*["'][a-z]/i.test(html);
-  checks.push({
-    id: 'lang',
-    label: 'Sprachattribut (lang)',
-    status: hasLang ? 'green' : 'red',
-    message: hasLang
-      ? 'Das <html>-Element hat ein lang-Attribut — Screenreader können die Sprache korrekt erkennen.'
-      : 'Kein lang-Attribut am <html>-Element. Screenreader können die Sprache nicht erkennen. (WCAG 3.1.1)',
-    fix: hasLang ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
-
-  // 3. Alt-Texte bei Bildern
   const imgTags = html.match(/<img[^>]*>/gi) || [];
-  const imgCount = imgTags.length;
-  const imgsWithoutAlt = imgTags.filter(tag => !/\balt\s*=/i.test(tag)).length;
-  const imgsWithEmptyAlt = imgTags.filter(tag => /\balt\s*=\s*["']\s*["']/i.test(tag)).length;
-  const imgsWithProperAlt = imgCount - imgsWithoutAlt - imgsWithEmptyAlt;
 
-  let altStatus: 'green' | 'yellow' | 'red';
-  let altMessage: string;
-  if (imgCount === 0) {
-    altStatus = 'green';
-    altMessage = 'Keine Bilder gefunden — kein Handlungsbedarf.';
-  } else if (imgsWithoutAlt === 0) {
-    altStatus = 'green';
-    altMessage = `${imgCount} Bild(er) gefunden — alle haben ein alt-Attribut. ${imgsWithEmptyAlt > 0 ? `(${imgsWithEmptyAlt} dekorativ mit leerem alt="")` : ''}`;
-  } else {
-    altStatus = imgsWithoutAlt > 2 ? 'red' : 'yellow';
-    altMessage = `${imgsWithoutAlt} von ${imgCount} Bild(ern) fehlt das alt-Attribut. Alt-Texte sind für Screenreader-Nutzer essenziell. (WCAG 1.1.1)`;
-  }
-  checks.push({
-    id: 'alt',
-    label: 'Alt-Texte für Bilder',
-    status: altStatus,
-    message: altMessage,
-    fix: altStatus === 'green' ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
+  const facts: Facts = {
+    isHttps,
+    // 2. lang
+    hasLang: /\<html[^>]+lang\s*=\s*["'][a-z]/i.test(html),
+    // 3. alt
+    imgCount: imgTags.length,
+    imgsWithoutAlt: imgTags.filter(tag => !/\balt\s*=/i.test(tag)).length,
+    imgsWithEmptyAlt: imgTags.filter(tag => /\balt\s*=\s*["']\s*["']/i.test(tag)).length,
+    // 4. headings
+    h1Count: (html.match(/<h1[\s>]/gi) || []).length,
+    h2Count: (html.match(/<h2[\s>]/gi) || []).length,
+    // 5. forms
+    inputCount: (html.match(/<input[^>]+type\s*=\s*["'](text|email|tel|number|search|url|password)[^>]*>/gi) || []).length,
+    labelCount: (html.match(/<label[\s>]/gi) || []).length,
+    hasAriaLabel: /aria-label\s*=/i.test(html),
+    // 6. skip link
+    hasSkipLink:
+      lc.includes('skip') ||
+      lc.includes('zum inhalt') ||
+      lc.includes('zum hauptinhalt') ||
+      lc.includes('#main') ||
+      lc.includes('#content') ||
+      lc.includes('#inhalt'),
+    // 7. landmarks
+    hasMain: lc.includes('<main') || lc.includes('role="main"') || lc.includes("role='main'"),
+    hasNav: lc.includes('<nav') || lc.includes('role="navigation"') || lc.includes("role='navigation'"),
+    // 8. focus (heuristic)
+    hasFocusVisible:
+      lc.includes(':focus') ||
+      lc.includes('focus-visible') ||
+      lc.includes('outline'),
+    hasFocusNone:
+      lc.includes('outline: none') ||
+      lc.includes('outline:none') ||
+      lc.includes('outline: 0') ||
+      lc.includes('outline:0'),
+    // 9. generic link texts (heuristic)
+    genericLinks: (html.match(/<a[^>]*>\s*(hier|click here|mehr|more|weiter|details|lesen|read more|here)\s*<\/a>/gi) || []).length,
+  };
 
-  // 4. Überschriften-Struktur
-  const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
-  const h2Count = (html.match(/<h2[\s>]/gi) || []).length;
-  const hasHeadings = h1Count > 0 || h2Count > 0;
-  let headingStatus: 'green' | 'yellow' | 'red';
-  let headingMessage: string;
-  if (!hasHeadings) {
-    headingStatus = 'red';
-    headingMessage = 'Keine H1- oder H2-Überschriften gefunden. Eine logische Überschriftenstruktur ist für Screenreader und Navigation essenziell. (WCAG 1.3.1)';
-  } else if (h1Count === 0) {
-    headingStatus = 'yellow';
-    headingMessage = 'Keine H1-Überschrift gefunden. Jede Seite sollte eine H1 als Hauptüberschrift haben.';
-  } else if (h1Count > 1) {
-    headingStatus = 'yellow';
-    headingMessage = `${h1Count} H1-Überschriften gefunden. Pro Seite sollte es genau eine H1 geben.`;
-  } else {
-    headingStatus = 'green';
-    headingMessage = `Überschriftenstruktur vorhanden: 1× H1, ${h2Count}× H2.`;
-  }
-  checks.push({
-    id: 'headings',
-    label: 'Überschriften-Struktur',
-    status: headingStatus,
-    message: headingMessage,
-    fix: headingStatus === 'green' ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
+  // Stored results stay German (as before) regardless of the UI language
+  await supabaseUpsert(domain, true, buildChecks(facts, 'de'));
 
-  // 5. Formular-Labels
-  const inputCount = (html.match(/<input[^>]+type\s*=\s*["'](text|email|tel|number|search|url|password)[^>]*>/gi) || []).length;
-  const labelCount = (html.match(/<label[\s>]/gi) || []).length;
-  const hasAriaLabel = /aria-label\s*=/i.test(html);
-  let formStatus: 'green' | 'yellow' | 'red';
-  let formMessage: string;
-  if (inputCount === 0) {
-    formStatus = 'green';
-    formMessage = 'Keine Texteingabefelder gefunden — kein Handlungsbedarf.';
-  } else if (labelCount >= inputCount || hasAriaLabel) {
-    formStatus = 'green';
-    formMessage = `${inputCount} Eingabefeld(er) gefunden, Labels oder ARIA-Labels erkannt.`;
-  } else if (labelCount > 0) {
-    formStatus = 'yellow';
-    formMessage = `${inputCount} Eingabefeld(er), aber nur ${labelCount} Label(s) gefunden. Nicht alle Felder könnten ausreichend beschriftet sein. (WCAG 1.3.1)`;
-  } else {
-    formStatus = 'red';
-    formMessage = `${inputCount} Eingabefeld(er) ohne sichtbare Labels gefunden. Screenreader können die Felder nicht beschreiben. (WCAG 1.3.1)`;
-  }
-  checks.push({
-    id: 'forms',
-    label: 'Formular-Labels',
-    status: formStatus,
-    message: formMessage,
-    fix: formStatus === 'green' ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
-
-  // 6. Skip-Links / Sprungnavigation
-  const hasSkipLink =
-    lc.includes('skip') ||
-    lc.includes('zum inhalt') ||
-    lc.includes('zum hauptinhalt') ||
-    lc.includes('#main') ||
-    lc.includes('#content') ||
-    lc.includes('#inhalt');
-  checks.push({
-    id: 'skiplink',
-    label: 'Skip-Link / Sprungnavigation',
-    status: hasSkipLink ? 'green' : 'yellow',
-    message: hasSkipLink
-      ? 'Ein Skip-Link zur Hauptnavigation oder zum Inhalt wurde gefunden.'
-      : 'Kein Skip-Link gefunden. Tastatur- und Screenreader-Nutzer müssen die gesamte Navigation durchlaufen. (WCAG 2.4.1)',
-    fix: hasSkipLink ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
-
-  // 7. ARIA-Landmarks
-  const hasMain = lc.includes('<main') || lc.includes('role="main"') || lc.includes("role='main'");
-  const hasNav = lc.includes('<nav') || lc.includes('role="navigation"') || lc.includes("role='navigation'");
-  const hasAriaLandmarks = hasMain && hasNav;
-  let ariaStatus: 'green' | 'yellow' | 'red';
-  let ariaMessage: string;
-  if (hasAriaLandmarks) {
-    ariaStatus = 'green';
-    ariaMessage = 'ARIA-Landmarks (<main>, <nav>) wurden erkannt — Seitenstruktur ist für Screenreader navigierbar.';
-  } else if (hasMain || hasNav) {
-    ariaStatus = 'yellow';
-    ariaMessage = `Teilweise Landmark-Struktur erkannt (${hasMain ? '<main>' : ''} ${hasNav ? '<nav>' : ''}). Vollständige Strukturierung empfohlen. (WCAG 1.3.6)`;
-  } else {
-    ariaStatus = 'yellow';
-    ariaMessage = 'Keine ARIA-Landmarks (<main>, <nav>) erkannt. Screenreader-Nutzer können nicht direkt zur Navigation oder zum Inhalt springen. (WCAG 1.3.6)';
-  }
-  checks.push({
-    id: 'aria',
-    label: 'ARIA-Landmarks',
-    status: ariaStatus,
-    message: ariaMessage,
-    fix: ariaStatus === 'green' ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
-
-  // 8. Fokus-Indikatoren (Heuristik)
-  const hasFocusVisible =
-    lc.includes(':focus') ||
-    lc.includes('focus-visible') ||
-    lc.includes('outline');
-  const hasFocusNone =
-    lc.includes('outline: none') ||
-    lc.includes('outline:none') ||
-    lc.includes('outline: 0') ||
-    lc.includes('outline:0');
-  let focusStatus: 'green' | 'yellow' | 'red';
-  let focusMessage: string;
-  if (hasFocusVisible && !hasFocusNone) {
-    focusStatus = 'green';
-    focusMessage = 'Fokus-Styles erkannt, kein outline:none gefunden — Tastaturnavigation sollte sichtbar sein.';
-  } else if (hasFocusNone && hasFocusVisible) {
-    focusStatus = 'yellow';
-    focusMessage = 'Fokus-Outline wird für einige Elemente unterdrückt. Bitte sicherstellen, dass alle interaktiven Elemente sichtbare Fokus-Indikatoren haben. (WCAG 2.4.7)';
-  } else if (hasFocusNone) {
-    focusStatus = 'red';
-    focusMessage = 'outline:none ohne Ersatz-Fokus-Styling gefunden. Tastaturnutzer sehen nicht, welches Element fokussiert ist. (WCAG 2.4.7)';
-  } else {
-    focusStatus = 'yellow';
-    focusMessage = 'Kein :focus-CSS gefunden. Bitte sicherstellen, dass interaktive Elemente sichtbare Fokus-Indikatoren haben. (WCAG 2.4.7)';
-  }
-  checks.push({
-    id: 'focus',
-    label: 'Fokus-Indikatoren',
-    status: focusStatus,
-    message: focusMessage,
-    fix: focusStatus === 'green' ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
-
-  // 9. Links mit aussagekräftigem Text (Heuristik)
-  const genericLinks = (html.match(/<a[^>]*>\s*(hier|click here|mehr|more|weiter|details|lesen|read more|here)\s*<\/a>/gi) || []).length;
-  checks.push({
-    id: 'linktext',
-    label: 'Aussagekräftige Link-Texte',
-    status: genericLinks === 0 ? 'green' : 'yellow',
-    message: genericLinks === 0
-      ? 'Keine typischen generischen Link-Texte ("hier", "mehr", "weiter") gefunden.'
-      : `${genericLinks} generische(r) Link-Text(e) erkannt ("hier", "mehr", "weiter"). Screenreader-Nutzer können Links ohne Kontext nicht unterscheiden. (WCAG 2.4.4)`,
-    fix: genericLinks === 0 ? null : { label: 'Webmaster-Hilfe anfragen', url: 'https://webmaster.plus' },
-  });
-
-  // 10. Defekte Links (cross-sell)
-  checks.push({
-    id: 'links',
-    label: 'Defekte Links',
-    status: 'yellow',
-    message: 'Defekte Links können nur durch einen vollständigen Crawl erkannt werden.',
-    fix: { label: 'Defekte Links prüfen', url: 'https://kaputte-links.de' },
-  });
-
-  // Save to Supabase
-  await supabaseUpsert(domain, true, checks);
-
-  return NextResponse.json({ url: finalUrl, checks });
+  return NextResponse.json({ url: finalUrl, checks: buildChecks(facts, lang) });
 }

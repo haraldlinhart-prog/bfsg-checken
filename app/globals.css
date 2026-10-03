@@ -43,6 +43,8 @@ a:hover { text-decoration: underline; }
 .header .wrap {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
 }
 .header-logo {
@@ -51,7 +53,52 @@ a:hover { text-decoration: underline; }
   color: var(--fg);
   text-decoration: none;
 }
-.header-logo span { color: var(--accent); }
+.header-logo .logoAccent { color: var(--accent); }
+
+/* Language switch (DE | EN) */
+.langSwitch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .9rem;
+  font-weight: 600;
+}
+.langSwitch a {
+  color: var(--muted);
+  padding: 6px 8px;
+  border-radius: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.langSwitch a:hover { color: var(--fg); background: var(--surface); text-decoration: none; }
+.langSwitch a[aria-current] { color: var(--fg); background: var(--surface); border: 1px solid var(--border); }
+.langSep { color: var(--border); }
+
+/* Visually hidden, still read by screen readers */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible keyboard focus */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
 /* Hero */
 .hero {
@@ -123,6 +170,7 @@ a:hover { text-decoration: underline; }
   padding: 0 0 48px;
 }
 .resultsUrl {
+  overflow-wrap: anywhere;
   font-size: .85rem;
   color: var(--muted);
   text-align: center;
@@ -165,6 +213,7 @@ a:hover { text-decoration: underline; }
   margin-bottom: 2px;
 }
 .checkMessage {
+  overflow-wrap: anywhere;
   font-size: .875rem;
   color: var(--muted);
   line-height: 1.5;
@@ -393,6 +442,22 @@ a:hover { text-decoration: underline; }
   vertical-align: middle;
 }
 
+/* Info section (English page) */
+.info {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+}
+.info h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.info p {
+  color: var(--muted);
+  font-size: .95rem;
+  margin-bottom: 12px;
+}
+
 /* Footer */
 .footer {
   border-top: 1px solid var(--border);
@@ -403,6 +468,8 @@ a:hover { text-decoration: underline; }
 }
 .footer a { color: var(--muted); }
 .footer a:hover { color: var(--fg); }
+.footer .footerLegal { margin-top: 12px; }
+.footer img { max-width: 100%; height: auto; }
 
 /* Contact form */
 .contactForm {
@@ -529,4 +596,11 @@ a:hover { text-decoration: underline; }
 @media (max-width: 520px) {
   .checkForm { flex-direction: column; }
   .summaryBar { flex-direction: column; align-items: flex-start; }
+}
+
+.contactField input:focus-visible,
+.contactField select:focus-visible,
+.contactField textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }

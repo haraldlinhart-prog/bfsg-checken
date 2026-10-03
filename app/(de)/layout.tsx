@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
-import './globals.css';
+import '../globals.css';
+import { SITE_URL } from '../components/i18n';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'BFSG-Check | bfsg-checken.de',
   description: 'Kostenloser BFSG-Check für Ihre Website. Prüfen Sie Barrierefreiheit nach dem Barrierefreiheitsstärkungsgesetz — Alt-Texte, Sprachangabe, Überschriften, Formulare und mehr.',
   openGraph: {
@@ -10,6 +12,7 @@ export const metadata: Metadata = {
     url: 'https://bfsg-checken.de',
     siteName: 'bfsg-checken.de',
     locale: 'de_DE',
+    alternateLocale: ['en_US'],
     type: 'website',
   },
 };

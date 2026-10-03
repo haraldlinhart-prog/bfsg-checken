@@ -1,21 +1,18 @@
-import ContactForm from './ContactForm';
+import ContactForm from '../../components/ContactForm';
+import SiteHeader from '../../components/SiteHeader';
+import { alternatesFor } from '../../components/i18n';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Kontakt | bfsg-checken.de',
   description: 'Fragen zu BFSG-Compliance? Schreiben Sie uns — wir helfen Ihnen weiter.',
+  alternates: alternatesFor('/kontakt', '/en/contact', 'de'),
 };
 
 export default function KontaktPage() {
   return (
     <>
-      <header className="header">
-        <div className="wrap">
-          <a className="header-logo" href="/">
-            ♿ <span>BFSG</span>-checken.de
-          </a>
-        </div>
-      </header>
+      <SiteHeader lang="de" deHref="/kontakt" enHref="/en/contact" />
 
       <main>
         <section className="hero" style={{ paddingBottom: '0' }}>
@@ -29,7 +26,7 @@ export default function KontaktPage() {
         </section>
 
         <div className="wrap">
-          <ContactForm />
+          <ContactForm lang="de" />
         </div>
       </main>
 

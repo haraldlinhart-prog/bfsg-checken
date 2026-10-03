@@ -1,16 +1,17 @@
-import CheckForm from './CheckForm';
-import ImpressumWidget from './ImpressumWidget';
+import type { Metadata } from 'next';
+import CheckForm from '../components/CheckForm';
+import ImpressumWidget from '../components/ImpressumWidget';
+import SiteHeader from '../components/SiteHeader';
+import { alternatesFor } from '../components/i18n';
+
+export const metadata: Metadata = {
+  alternates: alternatesFor('/', '/en', 'de'),
+};
 
 export default function Home() {
   return (
     <>
-      <header className="header">
-        <div className="wrap">
-          <a className="header-logo" href="/">
-            ♿ <span>BFSG</span>-checken.de
-          </a>
-        </div>
-      </header>
+      <SiteHeader lang="de" deHref="/" enHref="/en" />
 
       <main>
         <section className="hero">
@@ -20,7 +21,7 @@ export default function Home() {
               Kostenloser BFSG-Schnellcheck: URL eingeben, Ergebnis sofort sehen —
               Alt-Texte, Sprache, Überschriften, Formulare, ARIA-Landmarks und mehr.
             </p>
-            <CheckForm />
+            <CheckForm lang="de" />
           </div>
         </section>
       </main>
