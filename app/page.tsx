@@ -49,6 +49,8 @@ export default function Home() {
             <a href="/datenschutz">Datenschutz</a>
             {' '}·{' '}
             <a href="/kontakt">Kontakt</a>
+            {' '}·{' '}
+            <a href="/blog">Blog</a>
           </p>
         </footer>
       </div>
