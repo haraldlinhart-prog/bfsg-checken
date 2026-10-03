@@ -48,7 +48,7 @@ export async function GET(
     // serve unverified badge
   }
 
-  const color = verified ? '#16a34a' : '#6b7280';
+  const color = verified ? '#15803d' : '#6b7280'; // white status text needs >= 4.5:1
   const accentColor = verified ? '#22c55e' : '#9ca3af';
   const statusText = verified ? 'GEPRÜFT' : 'NICHT GEPRÜFT';
   const dateText = lastChecked ? lastChecked : '';
