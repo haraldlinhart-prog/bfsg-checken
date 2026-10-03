@@ -38,6 +38,7 @@ const TOOLS: { emoji: string; name: Record<Lang, string>; desc: Record<Lang, str
 const T = {
   de: {
     unknownError: 'Unbekannter Fehler',
+    emptyUrl: 'Bitte geben Sie eine URL ein.',
     connectionError: 'Verbindungsfehler. Bitte versuchen Sie es erneut.',
     placeholder: 'https://ihre-website.de',
     inputLabel: 'Website-URL',
@@ -84,6 +85,7 @@ const T = {
   },
   en: {
     unknownError: 'Unknown error',
+    emptyUrl: 'Please enter a URL.',
     connectionError: 'Connection error. Please try again.',
     placeholder: 'https://your-website.com',
     inputLabel: 'Website URL',
@@ -140,7 +142,10 @@ export default function CheckForm({ lang = 'de' }: { lang?: Lang }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!inputUrl.trim()) return;
+    if (!inputUrl.trim()) {
+      setApiError(t.emptyUrl);
+      return;
+    }
     setLoading(true);
     setResult(null);
     setApiError('');

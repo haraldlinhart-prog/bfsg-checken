@@ -78,7 +78,7 @@ a:hover { text-decoration: underline; }
 }
 .langSwitch a:hover { color: var(--fg); background: var(--surface); text-decoration: none; }
 .langSwitch a[aria-current] { color: var(--fg); background: var(--surface); border: 1px solid var(--border); }
-.langSep { color: var(--border); }
+.langSep { color: var(--muted); }
 
 /* Visually hidden, still read by screen readers */
 .srOnly {
@@ -288,6 +288,7 @@ textarea:focus-visible {
   gap: 10px;
 }
 .toolCard {
+  text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -653,3 +654,9 @@ h2.resultsUrl { font-weight: 400; }
 .notFound h1 { font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.2; margin-bottom: 12px; }
 .notFound p { color: var(--muted); max-width: 480px; margin: 0 auto 28px; }
 
+
+@media (max-width: 520px) {
+  .badgeGateInner { padding: 24px 16px; }
+  .badgeCode { padding-right: 16px; }
+  .badgeCopyBtn { position: static; display: block; width: 100%; margin-top: 8px; padding: 10px 12px; font-size: .9rem; }
+}

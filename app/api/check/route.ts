@@ -338,11 +338,11 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     if (body.lang === 'en') lang = 'en';
     url = (body.url ?? '').trim();
-    if (!url) return NextResponse.json({ error: lang === 'en' ? 'Please enter a URL.' : 'URL fehlt' }, { status: 400 });
+    if (!url) return NextResponse.json({ error: lang === 'en' ? 'Please enter a URL.' : 'Bitte geben Sie eine URL ein.' }, { status: 400 });
     if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
     new URL(url); // validate
   } catch {
-    return NextResponse.json({ error: lang === 'en' ? 'Invalid URL' : 'Ungültige URL' }, { status: 400 });
+    return NextResponse.json({ error: lang === 'en' ? 'Invalid URL. Please check your input.' : 'Ungültige URL. Bitte prüfen Sie Ihre Eingabe.' }, { status: 400 });
   }
 
   const parsedUrl = new URL(url);
@@ -374,7 +374,8 @@ export async function POST(req: NextRequest) {
   const isHttps = new URL(finalUrl).protocol === 'https:';
 
   if (fetchError) {
-    return NextResponse.json({ url: finalUrl, checks: [sslCheck(isHttps, lang), reachableCheck(false, lang)] });
+    // Nothing else can be judged (not even HTTPS) when the page could not be loaded
+    return NextResponse.json({ url: finalUrl, checks: [reachableCheck(false, lang)] });
   }
 
   const lc = html.toLowerCase();
