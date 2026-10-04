@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'edge';
 
 const SUPABASE_URL = 'https://frbvsdumltlzisddrlbi.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyYnZzZHVtbHRsemlzZGRybGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNTk4NDQsImV4cCI6MjA5NzgzNTg0NH0.8Vrrs8tIyjdGrD3xGoQ3lkpv4G3LBvy4bpeXpaQ8OGY';
+// Serverseitig mit dem Service-Key (Vercel-Env SUPABASE_SERVICE_KEY). Der öffentliche
+// Anon-Key ist nur Übergangslösung, bis RLS auf der Tabelle aktiv ist; danach darf er nichts mehr.
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyYnZzZHVtbHRsemlzZGRybGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNTk4NDQsImV4cCI6MjA5NzgzNTg0NH0.8Vrrs8tIyjdGrD3xGoQ3lkpv4G3LBvy4bpeXpaQ8OGY';
 
 type Lang = 'de' | 'en';
 type Status = 'green' | 'yellow' | 'red';
@@ -21,8 +23,8 @@ async function supabaseUpsert(domain: string, badgeVerified: boolean, checks: Ch
     await fetch(`${SUPABASE_URL}/rest/v1/bfsg_checks`, {
       method: 'POST',
       headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json',
         Prefer: 'resolution=merge-duplicates',
       },
