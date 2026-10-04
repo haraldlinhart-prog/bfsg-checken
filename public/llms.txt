@@ -1,0 +1,41 @@
+# bfsg-checken.de
+
+> Kostenloser automatischer Schnellcheck der Barrierefreiheit einer einzelnen Webseite nach dem Barrierefreiheitsstärkungsgesetz (BFSG), der deutschen Umsetzung des European Accessibility Act (EAA). Der Check prüft ausgewählte, maschinell erkennbare WCAG-Kriterien und liefert eine erste Einschätzung – kein vollständiges Audit und keine Rechtsberatung. Verfügbar auf Deutsch und Englisch.
+
+## Kernfunktionen
+
+- Prüfung einer eingegebenen URL (nur diese eine Seite, kein Crawl der gesamten Website); analysiert werden der HTML-Code und bis zu fünf eingebundene Stylesheets, ohne Ausführung von JavaScript.
+- Sprachattribut: lang-Attribut am <html>-Element (WCAG 3.1.1).
+- Alt-Texte: fehlende alt-Attribute an Bildern (WCAG 1.1.1).
+- Überschriften: vorhandene Überschriften und genau eine H1 (WCAG 1.3.1).
+- Formular-Labels: Beschriftung von Texteingabefeldern durch Labels oder ARIA-Labels (WCAG 1.3.1).
+- Skip-Link zum Überspringen der Navigation (WCAG 2.4.1, Heuristik).
+- Landmarks: <main> und <nav>.
+- Fokus-Indikatoren: Fokus-Styles bzw. unterdrückte Outline (WCAG 2.4.7, Heuristik).
+- Generische Link-Texte wie „hier“ oder „mehr“ (WCAG 2.4.4, Heuristik).
+- Grundlagen: HTTPS und Erreichbarkeit der Seite.
+- Ergebnis je Prüfpunkt als OK, Hinweis oder Problem mit kurzer Erklärung.
+- Kostenlos und ohne Registrierung; Voraussetzung für die vollständige Auswertung ist, dass das Siegel von bfsg-checken.de auf der geprüften Website eingebunden ist.
+
+## Zielgruppe
+
+Betreiber von Onlineshops und anderen Websites mit Angeboten für Verbraucher, Agenturen und Webmaster, die sich schnell einen ersten Überblick über die Barrierefreiheit einer Seite verschaffen möchten.
+
+## Wichtige Seiten
+
+- [BFSG-Check (Deutsch)](https://www.bfsg-checken.de/): Startseite mit Prüfformular, Erklärung der Prüfpunkte, Informationen zum BFSG und FAQ
+- [Accessibility check (English)](https://www.bfsg-checken.de/en): englische Version der Startseite
+- [News / Blog](https://www.bfsg-checken.de/blog/): Artikel zum BFSG
+- [Kontakt](https://www.bfsg-checken.de/kontakt): Kontaktformular (Deutsch)
+- [Contact](https://www.bfsg-checken.de/en/contact): Kontaktformular (Englisch)
+- [Datenschutz](https://www.bfsg-checken.de/datenschutz): Datenschutzerklärung (nur Deutsch)
+
+## Hinweis
+
+Ein automatischer Check deckt nur einen Teil der WCAG-Kriterien ab. Farbkontraste, Tastaturbedienung, die Qualität von Alt-Texten, per JavaScript nachgeladene Inhalte, Videos und PDF-Dokumente werden nicht geprüft. Das Ergebnis ist keine Bestätigung, dass eine Website die Anforderungen des BFSG erfüllt, und ersetzt weder ein manuelles Audit noch eine Rechtsberatung. Das BFSG gilt seit dem 28. Juni 2025; Kleinstunternehmen, die Dienstleistungen erbringen, sind von den Anforderungen an Dienstleistungen ausgenommen.
+
+Herausgeber: PAN21.com International LLC (https://www.pan21.com), Teil des PAN21-Netzwerks.
+
+## English
+
+bfsg-checken.de is a free automated quick check of a single web page's accessibility under the BFSG, Germany's implementation of the European Accessibility Act (EAA). It tests selected machine-detectable WCAG criteria (language attribute, alt attributes, headings, form labels, skip link, landmarks, focus indicators, generic link text, HTTPS and reachability). Running the full check requires the bfsg-checken.de seal to be embedded on the checked website. It provides a first indication only and is not a full audit or legal advice. English version: https://www.bfsg-checken.de/en

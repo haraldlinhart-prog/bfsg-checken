@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import CheckForm from '../components/CheckForm';
+import HomeInfo from '../components/HomeInfo';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import { alternatesFor } from '../components/i18n';
@@ -26,22 +27,7 @@ export default function Home() {
         </section>
 
         <div className="wrap">
-          <section className="info" aria-labelledby="about-bfsg">
-            <h2 id="about-bfsg">Was ist das BFSG?</h2>
-            <p>
-              Das Barrierefreiheitsstärkungsgesetz (BFSG) setzt den European Accessibility Act (EAA)
-              in deutsches Recht um. Seit dem 28. Juni 2025 müssen viele digitale Produkte und
-              Dienstleistungen für Verbraucher — etwa Onlineshops, Buchungsportale und
-              Bankdienstleistungen — für Menschen mit Behinderungen zugänglich sein.
-            </p>
-            <p>
-              Gemessen wird Barrierefreiheit in der Praxis an den Web Content Accessibility
-              Guidelines (WCAG), auf die die europäische Norm EN&nbsp;301&nbsp;549 verweist.
-              Dieser Schnellcheck prüft automatisch zentrale WCAG-Kriterien und zeigt Ihnen, wo Sie
-              ansetzen sollten. Er liefert eine erste Einschätzung — er ersetzt weder ein
-              vollständiges Audit noch eine Rechtsberatung.
-            </p>
-          </section>
+          <HomeInfo lang="de" />
         </div>
       </main>
 
