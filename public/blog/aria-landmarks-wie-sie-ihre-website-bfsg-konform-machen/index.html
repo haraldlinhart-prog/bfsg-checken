@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARIA Landmarks: Wie sie Ihre Website BFSG-konform machen</title>
+<meta name="description" content="ARIA Landmarks strukturieren Webseiten barrierefrei und sind essenziell für BFSG-Konformität. Erfahren Sie, wie Sie sie richtig einsetzen und im BFSG-Check prüfen.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.bfsg-checken.de/blog/aria-landmarks-wie-sie-ihre-website-bfsg-konform-machen/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARIA Landmarks: Wie sie Ihre Website BFSG-konform machen">
+<meta property="og:description" content="ARIA Landmarks strukturieren Webseiten barrierefrei und sind essenziell für BFSG-Konformität. Erfahren Sie, wie Sie sie richtig einsetzen und im BFSG-Check prüfen.">
+<meta property="og:url" content="https://www.bfsg-checken.de/blog/aria-landmarks-wie-sie-ihre-website-bfsg-konform-machen/">
+<meta property="og:site_name" content="bfsg-checken.de">
+<meta property="og:image" content="https://video.pan21.com/blog-images/img_6ae190b9618637.85473211.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://video.pan21.com/blog-images/img_6ae190b9618637.85473211.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"ARIA Landmarks: Wie sie Ihre Website BFSG-konform machen","description":"ARIA Landmarks strukturieren Webseiten barrierefrei und sind essenziell für BFSG-Konformität. Erfahren Sie, wie Sie sie richtig einsetzen und im BFSG-Check prüfen.","inLanguage":"de","datePublished":"2026-10-28T06:05:46.086Z","dateModified":"2026-10-28T06:05:46.086Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.bfsg-checken.de/blog/aria-landmarks-wie-sie-ihre-website-bfsg-konform-machen/"},"url":"https://www.bfsg-checken.de/blog/aria-landmarks-wie-sie-ihre-website-bfsg-konform-machen/","image":"https://video.pan21.com/blog-images/img_6ae190b9618637.85473211.jpg","author":{"@type":"Organization","name":"bfsg-checken.de","url":"https://www.bfsg-checken.de/"},"publisher":{"@type":"Organization","name":"bfsg-checken.de","url":"https://www.bfsg-checken.de/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"bfsg-checken.de","item":"https://www.bfsg-checken.de/"},{"@type":"ListItem","position":2,"name":"News","item":"https://www.bfsg-checken.de/blog/"},{"@type":"ListItem","position":3,"name":"ARIA Landmarks: Wie sie Ihre Website BFSG-konform machen","item":"https://www.bfsg-checken.de/blog/aria-landmarks-wie-sie-ihre-website-bfsg-konform-machen/"}]}</script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; line-height: 1.7; color: #1a1a1a; }
+  h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.4rem; margin-top: 2rem; }
+  h3 { font-size: 1.15rem; margin-top: 1.5rem; }
+  p { margin: 1rem 0; }
+  a.back { display: inline-block; margin-bottom: 24px; color: #666; text-decoration: none; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<a class="back" href="https://www.bfsg-checken.de/">&larr; Zurück zu bfsg-checken.de</a>
+<h1>ARIA Landmarks: Wie sie Ihre Website BFSG-konform machen</h1>
+<figure style="margin:0 0 1.5rem;"><img src="https://pixabay.com/get/g5969b69a40e1104af9fb29a4cafef155ad9e2f8f9286c7c54db6e70a895ac55d17fcdfe0e640067a624c88614645ffa14c01624cf1516a0d1bbb8130066634a5_640.jpg" alt="ARIA Landmarks: Wie sie Ihre Website BFSG-konform machen" style="width:100%;height:auto;border-radius:8px;" loading="lazy"><figcaption style="font-size:0.78rem;color:#8a9a94;margin-top:0.4rem;">Bild: Pixabay</figcaption></figure>
+
+<p>Mit dem Barrierefreiheitsstärkungsgesetz (BFSG) stehen Unternehmen vor neuen Herausforderungen bei der digitalen Barrierefreiheit. ARIA Landmarks sind dabei ein zentrales technisches Feature, das explizit geprüft wird und maßgeblich zur Navigation und Orientierung für Menschen mit Behinderungen beiträgt. In diesem Artikel erfahren Sie, was ARIA Landmarks sind, warum sie für die BFSG-Konformität unverzichtbar sind und wie Sie sie korrekt implementieren.</p>
+
+<h2>Was sind ARIA Landmarks?</h2>
+
+<p>ARIA Landmarks sind spezielle HTML-Attribute, die verschiedene Bereiche einer Webseite semantisch kennzeichnen. ARIA steht für "Accessible Rich Internet Applications" und wurde vom World Wide Web Consortium (W3C) entwickelt, um die Barrierefreiheit von Webanwendungen zu verbessern.</p>
+
+<p>Diese Landmarks fungieren als Wegweiser für assistive Technologien wie Screenreader. Sie ermöglichen es Nutzern mit Sehbehinderungen, schnell zwischen verschiedenen Seitenbereichen zu navigieren, ohne den gesamten Inhalt linear durchlaufen zu müssen. Während sehende Nutzer die Struktur einer Webseite visuell erfassen können, bieten ARIA Landmarks diese strukturelle Information in maschinenlesbarer Form.</p>
+
+<h2>Die wichtigsten ARIA Landmark-Rollen</h2>
+
+<p>Es gibt verschiedene Landmark-Rollen, die jeweils unterschiedliche Funktionen erfüllen:</p>
+
+<h3>Banner (role="banner")</h3>
+<p>Das Banner kennzeichnet den Kopfbereich der Website, der typischerweise das Logo, die Hauptnavigation und andere einleitende Elemente enthält. In HTML5 entspricht dies meist dem <code>&lt;header&gt;</code>-Element auf oberster Ebene.</p>
+
+<h3>Navigation (role="navigation")</h3>
+<p>Dieser Landmark identifiziert Navigationsbereiche wie Hauptmenüs, Breadcrumbs oder Seitenleisten mit Links. Websites können mehrere Navigationselemente enthalten, die durch aussagekräftige Labels unterschieden werden sollten.</p>
+
+<h3>Main (role="main")</h3>
+<p>Das Main-Landmark markiert den Hauptinhalt der Seite. Es sollte nur einmal pro Seite verwendet werden und umfasst den zentralen Content, um den es auf der jeweiligen Seite geht. In HTML5 wird dies durch das <code>&lt;main&gt;</code>-Element repräsentiert.</p>
+
+<h3>Complementary (role="complementary")</h3>
+<p>Dieser Bereich kennzeichnet ergänzende Inhalte, die zum Hauptinhalt in Beziehung stehen, aber auch eigenständig verständlich sind. Typische Beispiele sind Sidebars mit verwandten Artikeln oder zusätzlichen Informationen.</p>
+
+<h3>Contentinfo (role="contentinfo")</h3>
+<p>Das Contentinfo-Landmark markiert den Fußbereich der Seite mit Informationen wie Copyright, Impressum oder Kontaktdaten. Es entspricht dem <code>&lt;footer&gt;</code>-Element auf oberster Ebene.</p>
+
+<h3>Form und Search</h3>
+<p>Formular-Bereiche können mit <code>role="form"</code> gekennzeichnet werden, während Suchfunktionen das spezifische <code>role="search"</code> erhalten sollten. Dies hilft Nutzern, interaktive Elemente schnell zu identifizieren.</p>
+
+<h2>ARIA Landmarks und BFSG-Konformität</h2>
+
+<p>Das BFSG verlangt von Unternehmen ab dem 28. Juni 2025, dass ihre digitalen Angebote barrierefrei gestaltet sind. Die korrekte Implementierung von ARIA Landmarks ist dabei ein wesentlicher Bestandteil der technischen Prüfung und trägt direkt zur Erfüllung der EN 301 549 bei, dem europäischen Standard für digitale Barrierefreiheit.</p>
+
+<p>ARIA Landmarks sind besonders relevant für folgende WCAG-Kriterien (Web Content Accessibility Guidelines), die auch im BFSG berücksichtigt werden:</p>
+
+<ul>
+<li>WCAG 2.4.1 (Bereiche umgehen): Landmarks ermöglichen es Nutzern, wiederholte Inhaltsblöcke zu überspringen</li>
+<li>WCAG 1.3.1 (Info und Beziehungen): Die semantische Struktur wird programmatisch vermittelt</li>
+<li>WCAG 2.4.6 (Überschriften und Labels): Landmarks bieten klare Orientierungspunkte innerhalb der Seite</li>
+</ul>
+
+<p>Bei einer BFSG-Prüfung wird explizit untersucht, ob die Website über eine logische Landmark-Struktur verfügt und ob diese korrekt implementiert ist. Fehlen wichtige Landmarks oder sind sie falsch eingesetzt, kann dies zu Mängeln im Audit führen.</p>
+
+<h2>Praktische Implementierung von ARIA Landmarks</h2>
+
+<p>Die Implementierung von ARIA Landmarks erfolgt auf zwei Arten: durch die Verwendung semantischer HTML5-Elemente oder durch explizite ARIA-Rollen.</p>
+
+<h3>HTML5-Semantik nutzen</h3>
+<p>Moderne HTML5-Elemente haben bereits implizite Landmark-Rollen. Das <code>&lt;header&gt;</code>-Element auf oberster Ebene fungiert automatisch als Banner, <code>&lt;nav&gt;</code> als Navigation, <code>&lt;main&gt;</code> als Main-Content und <code>&lt;footer&gt;</code> als Contentinfo. Dies ist die bevorzugte Methode, da sie gleichzeitig die HTML-Semantik und die Barrierefreiheit verbessert.</p>
+
+<h3>Explizite ARIA-Rollen</h3>
+<p>Bei älteren Websites oder wenn HTML5-Elemente nicht verwendet werden können, lassen sich ARIA-Rollen explizit über das <code>role</code>-Attribut hinzufügen. Beispielsweise wird aus einem <code>&lt;div role="navigation"&gt;</code> ein Navigations-Landmark.</p>
+
+<h3>Beschriftung von Landmarks</h3>
+<p>Wenn mehrere Landmarks desselben Typs auf einer Seite existieren, sollten sie eindeutig beschriftet werden. Dies geschieht über <code>aria-label</code> oder <code>aria-labelledby</code>. Zum Beispiel: <code>&lt;nav aria-label="Hauptnavigation"&gt;</code> und <code>&lt;nav aria-label="Fußzeilen-Navigation"&gt;</code>.</p>
+
+<h2>Häufige Fehler bei ARIA Landmarks vermeiden</h2>
+
+<p>Bei der Implementierung von ARIA Landmarks können verschiedene Fehler auftreten, die die Barrierefreiheit beeinträchtigen:</p>
+
+<ul>
+<li><strong>Fehlende Main-Landmark:</strong> Jede Seite sollte genau ein Main-Landmark haben, das den Hauptinhalt umschließt</li>
+<li><strong>Verschachtelte Landmarks gleichen Typs:</strong> Landmarks sollten nicht unnötig ineinander verschachtelt werden</li>
+<li><strong>Zu viele Landmarks:</strong> Eine übermäßige Verwendung kann die Navigation erschweren statt sie zu erleichtern</li>
+<li><strong>Fehlende Labels bei mehrfachen Landmarks:</strong> Mehrere Navigationen ohne aussagekräftige Beschriftung verwirren Nutzer</li>
+<li><strong>Inkonsistente Struktur:</strong> Die Landmark-Struktur sollte auf allen Seiten eines Webauftritts konsistent sein</li>
+</ul>
+
+<h2>ARIA Landmarks mit BFSG-Checken prüfen</h2>
+
+<p>Die manuelle Prüfung von ARIA Landmarks kann komplex sein. BFSG-Checken bietet automatisierte Tests, die überprüfen, ob Ihre Website über eine korrekte Landmark-Struktur verfügt. Das Tool erkennt fehlende, falsch implementierte oder redundante Landmarks und gibt konkrete Hinweise zur Optimierung.</p>
+
+<p>Die automatisierte Prüfung umfasst unter anderem:</p>
+
+<ul>
+<li>Vorhandensein aller essentiellen Landmarks (Banner, Main, Contentinfo)</li>
+<li>Korrekte Hierarchie und Verschachtelung</li>
+<li>Eindeutige Beschriftung bei mehrfachen Landmarks gleichen Typs</li>
+<li>Validierung der ARIA-Syntax</li>
+</ul>
+
+<p>Regelmäßige Tests mit BFSG-Checken helfen Ihnen, frühzeitig Probleme zu identifizieren und Ihre Website kontinuierlich BFSG-konform zu halten.</p>
+
+<h2>Fazit: ARIA Landmarks als Fundament der Barrierefreiheit</h2>
+
+<p>ARIA Landmarks sind mehr als nur ein technisches Detail – sie sind ein fundamentaler Bestandteil barrierefreier Webseiten und unverzichtbar für die BFSG-Konformität. Durch die richtige Implementierung schaffen Sie eine klare Struktur, die allen Nutzern, insbesondere Menschen mit Behinderungen, eine effiziente Navigation ermöglicht. Mit den automatisierten Prüfungen von BFSG-Checken stellen Sie sicher, dass Ihre Landmarks korrekt implementiert sind und Ihre Website den gesetzlichen Anforderungen entspricht.</p>
+
+<p style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee"><a href="https://www.bfsg-checken.de/blog/">Weitere Artikel &rarr;</a></p>
+<footer style="margin-top:2rem;font-size:0.85rem;color:#666"><a href="https://www.bfsg-checken.de/datenschutz">Datenschutz</a></footer>
+</body>
+</html>
