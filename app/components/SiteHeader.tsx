@@ -1,4 +1,5 @@
 import type { Lang } from './i18n';
+import SuchmaschinenBlogLink from './SuchmaschinenBlogLink';
 
 interface Props {
   lang: Lang;
@@ -38,6 +39,8 @@ export default function SiteHeader({ lang, deHref, enHref }: Props) {
           >
             EN<span className="srOnly"> – English</span>
           </a>
+          {/* suchmaschinen.pro:blog-link */}
+          <SuchmaschinenBlogLink />
         </nav>
       </div>
     </header>
