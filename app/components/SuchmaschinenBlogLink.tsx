@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 const SECTIONS = [
   {
     "prefix": null,
-    "href": "/blog/",
+    "href": "/blog",
     "label": "Ratgeber",
     "lang": "de"
   }
