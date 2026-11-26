@@ -2,8 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.bfsg-checken.de/blog</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.bfsg-checken.de/blog/ist-meine-website-barrierefrei-zehn-ja-nein-fragen-fur-den-15-minuten-</loc>
+    <lastmod>2026-11-26</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.bfsg-checken.de/blog/barrierefreiheit-website-testen-kostenlos-wave-lighthouse-axe-und-acce</loc>
